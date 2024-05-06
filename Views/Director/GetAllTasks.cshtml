@@ -1,0 +1,73 @@
+﻿@using HRMS.Models;
+@model List<Task>
+<p>
+    <h3>Approve Or Reject Tasks</h3>
+</p>
+<table class="table table-bordered">
+    <tr>
+        <th>Employee Name</th>
+        <th>Task Date</th>
+        <th>Task Name</th>
+        <th>Task Description</th>
+        <th>Approver</th>
+        <th>Approved By</th>
+        <th>ApprovedOr On</th>
+        <th>Status</th>
+        <th>Modified On</th>
+        <th>
+            Approve
+        </th>
+        <th>
+            reject
+        </th>
+    </tr>
+
+    @foreach (Task i in Model)
+    {  
+        <tr id="@i.TaskId">
+            <td>@i.Employee2.FirstName @i.Employee2.LastName</td>
+            <td>@i.TaskDate.Value.ToShortDateString()</td>
+            <td>@i.TaskName</td>
+            <td>@i.TaskDescription</td>
+            <td>@i.Employee1.FirstName  @i.Employee1.LastName</td>
+            @if (i.Employee != null)
+            {
+                <td>@i.Employee.FirstName @i.Employee.LastName</td>
+            }
+            else
+            {
+                <td></td>
+            }
+
+            @if (i.ApprovedORRejectedOn != null)
+            {
+                <td>@i.ApprovedORRejectedOn.Value.ToShortDateString()</td>
+            }
+            else
+            {
+                <td></td>
+            }
+            <td><span class='@(i.Status == "Approved" ? "bg-success" : "bg-danger") ps-2 pe-3 d-flex align-items-center justify-content-center '
+      style="border-radius:100px;">@i.Status</span></td>
+            @if (i.ModifiedOn != null)
+            {
+                <td>@i.ModifiedOn.Value.ToShortDateString()</td>
+            }
+            else
+            {
+                <td></td>
+            }
+         
+        
+            <td>
+                @Html.ActionLink("Approve", "ApproveTask", "Director",
+                   new { id = @i.TaskId, status = "Approved" }, new { @class = "btn btn-info" })
+            </td>
+            <td>
+                @Html.ActionLink("Reject", "ApproveTask", "Director",
+                   new { id = @i.TaskId, status = "Rejected" }, new { @class = "btn btn-danger" })
+            </td>
+        </tr>
+
+    }
+</table>

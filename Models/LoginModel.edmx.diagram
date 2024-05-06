@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="c3e4186c80c14a76916aa5075045bddb" Name="Diagram1">
+        <EntityTypeShape EntityType="MayankModel.Employee" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="MayankModel.Role" Width="1.5" PointX="0.75" PointY="2.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="MayankModel.Task" Width="1.5" PointX="5.25" PointY="1.25" IsExpanded="true" />
+        <AssociationConnector Association="MayankModel.FK__Employee__Depart__0B5CAFEA" ManuallyRouted="false" />
+        <AssociationConnector Association="MayankModel.FK__Employee__Report__0C50D423" ManuallyRouted="false" />
+        <AssociationConnector Association="MayankModel.FK__Tasks__ApprovedO__11158940" ManuallyRouted="false" />
+        <AssociationConnector Association="MayankModel.FK__Tasks__ApproverI__10216507" ManuallyRouted="false" />
+        <AssociationConnector Association="MayankModel.FK__Tasks__EmployeeI__0F2D40CE" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

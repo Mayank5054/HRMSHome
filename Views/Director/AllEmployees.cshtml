@@ -1,0 +1,95 @@
+﻿
+@using HRMS.Models;
+@model List<Employee>
+    <p>
+        <h3> All Employees </h3>
+    </p>
+<script>
+    console.log("Hello world");
+    function openModal(id) {
+        $("#yesDelete").attr("onclick", `deleteProduct(${id})`)
+    }
+    function deleteProduct(id) {
+        console.log($(this))
+        $.ajax({
+            method: "GET",
+            url: "/Director/DeleteEmployee/" + id,
+            success: function (data) {
+                console.log($(this))
+                console.log(data);
+                $(`#${id}`).remove();
+                $("#noDelete").click();
+                console.log("product deleted");
+            },
+            error: function (data) {
+                console.log("Error Occured");
+            }
+        })
+    }
+</script>
+<table class="table table-bordered">
+    <tr>
+        <th>Employee Name</th>
+        <th>Birth-date</th>
+        <th>Gender</td>
+        <th>Role</th>
+        <th>Reporting Person</th>
+        <th>
+            Edit
+        </th>
+        <th>
+            Delete
+        </th>
+    </tr>
+
+    @foreach (Employee i in Model)
+    {
+        <tr id="@i.EmployeeId">
+
+            <td>@i.FirstName @i.LastName</td>
+            <td>@i.BirthDate.Value.ToShortDateString()</td>
+            @if (i.Gender == "M")
+            {
+                <td>Male</td>
+            }
+            else
+            {
+                <td>Female</td>
+            }
+
+            <td>@i.Role.Name</td>
+            <td>@i.Employee2.FirstName @i.Employee2.LastName</td>
+            <td>
+                @Html.ActionLink("Edit", "EditEmployee", "Director",
+                   new { id = @i.EmployeeId }, new { @class = "btn btn-primary" })
+            </td>
+            <td>
+                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#myModal" onclick="openModal(@i.EmployeeId)">
+                    Delete
+                </button>
+                @*@Html.ActionLink("Delete", "DeleteEmployee", "Director",
+    new { id = @i.EmployeeId }, new { @class = "btn btn-danger" })*@
+            </td>
+        </tr>
+
+    }
+</table>
+
+<div class="modal" id="myModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+
+            <div class="modal-body" style="height:200px;width:500px">
+                <p class="h3 p-3">Are You Sure ?</p>
+                <p>
+                    <button class="btn btn-success" id="yesDelete">Yes</button>
+                    <button class="btn btn-info" data-bs-dismiss="modal" id="noDelete">No</button>
+                </p>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,113 @@
+﻿@using HRMS.Models;
+@model List<Task>
+    <p>
+        <h3> Your Tasks</h3>
+    </p>
+    <script>
+    console.log("Hello world");
+    function openModal(id) {
+        $("#yesDelete").attr("onclick", `deleteProduct(${id})`)
+    }
+    function deleteProduct(id) {
+        console.log($(this))
+        $.ajax({
+            method: "GET",
+            url: "/Director/DeleteTask/" + id,
+            success: function (data) {
+                console.log($(this))
+                console.log(data);
+                $(`#${id}`).remove();
+                $("#noDelete").click();
+                console.log("product deleted");
+            },
+            error: function (data) {
+                console.log("Error Occured");
+            }
+        })
+    }
+    </script>
+<table class="table table-bordered">
+    <tr>
+        <th>Task Date</th>
+        <th>Task Name</th>
+        <th>Task Description</th>
+        <th>Approver</th>
+        <th>Approved By</th>
+        <th>ApprovedOr On</th>
+        <th>Status</th>
+        <th>Modified On</th>
+        <th>Edit</th>
+        <th>Delete</th>
+    </tr>
+
+    @foreach (Task i in Model)
+    {
+        <tr id="@i.TaskId">
+            <td>@i.TaskDate.Value.ToShortDateString()</td>
+            <td>@i.TaskName</td>
+            <td>@i.TaskDescription</td>
+            <td>@i.Employee1.FirstName  @i.Employee1.LastName</td>
+            @if (i.Employee != null)
+            {
+                <td>@i.Employee.FirstName @i.Employee.LastName</td>
+            }
+            else
+            {
+                <td></td>
+            }
+            @if (i.ApprovedORRejectedOn != null)
+            {
+                <td>@i.ApprovedORRejectedOn.Value.ToShortDateString()</td>
+            }
+            else
+            {
+                <td></td>
+            }
+            
+            <td><span 
+                      class='@(i.Status == "Approved" ? "bg-success" : "bg-danger") ps-2 pe-3 d-flex align-items-center justify-content-center '  
+                      
+                      style="border-radius:100px;">@i.Status</span></td>
+            @if (i.ModifiedOn != null)
+            {
+                <td>@i.ModifiedOn.Value.ToShortDateString()</td>
+            }
+            else
+            {
+                <td></td>
+            }
+
+            <td>
+                @Html.ActionLink("Edit", "EditTask", "Director",
+                   new { id = @i.TaskId }, new { @class = "btn btn-primary" })
+            </td>
+            <td>
+                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#myModal" onclick="openModal(@i.TaskId)">
+                    Delete
+                </button>
+                @*@Html.ActionLink("Delete", "DeleteTask", "Director",
+    new { id = @i.TaskId }, new { @class = "btn btn-danger" })*@
+            </td>
+
+        </tr>
+
+    }
+</table>
+
+<div class="modal" id="myModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+
+            <div class="modal-body" style="height:200px;width:500px">
+                <p class="h3 p-3">Are You Sure ?</p>
+                <p>
+                    <button class="btn btn-success" id="yesDelete">Yes</button>
+                    <button class="btn btn-info" data-bs-dismiss="modal" id="noDelete">No</button>
+                </p>
+
+            </div>
+
+        </div>
+    </div>
+</div>

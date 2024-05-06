@@ -1,0 +1,43 @@
+﻿@using HRMS.Models
+@model Task
+<p>
+    <h3>Add Task</h3>
+</p>
+@using (Html.BeginForm("AddTask", "Director", FormMethod.Post, new
+{
+    @id = "AddTasKForm"
+}))
+{
+
+    @*@Html.TextBoxFor(m => m.TaskDate, "{0:yyyy-mm-dd}", new
+        {
+        type = "date",
+        })
+
+    <p>TaskName</p>
+    @Html.TextBoxFor(x => x.TaskName)
+    <p>TaskDescription</p>
+    @Html.TextBoxFor(x => x.TaskDescription)*@
+
+
+    <div class="form-floating mt-3 mb-3 ">
+
+        <input type="date" name="TaskDate" class="form-control" />
+        <label class="control-label"> Create Date</label>
+        @*@Html.TextBoxFor(model => model.BookTitle, new { @class = "form-control", style = "max-width:100%" })*@
+        @Html.ValidationMessageFor(model => model.TaskDate, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-floating mt-3 mb-3">
+
+        @Html.TextBoxFor(model => model.TaskName, new { id = "Email", @class = "form-control", style = "max-width:100%" })
+        @Html.LabelFor(model => model.TaskName, htmlAttributes: new { @class = "control-label" })
+        @Html.ValidationMessageFor(model => model.TaskName, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-floating mt-3 mb-3">
+
+        @Html.TextBoxFor(model => model.TaskDescription, new { id = "Email", @class = "form-control", style = "max-width:100%" })
+        @Html.LabelFor(model => model.TaskDescription, htmlAttributes: new { @class = "control-label" })
+        @Html.ValidationMessageFor(model => model.TaskDescription, "", new { @class = "text-danger" })
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+}

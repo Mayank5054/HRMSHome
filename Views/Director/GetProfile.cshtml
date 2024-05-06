@@ -1,0 +1,60 @@
+﻿@using HRMS.Models;
+@model Employee
+
+<p>
+    <h3> Your Profile </h3>
+</p>
+<div class="container">
+
+
+
+    <div class="row  mb-1 mt-2 p-3"
+         style="box-shadow:1px 0px 5px #cccccc;">
+
+        <div class="col-md-8">
+            <span class="fs-5" style="color:#808080">Name</span>
+            <p class="h3">@Model.FirstName @Model.LastName </p>
+            <p class="mt-4">
+                <span class="fs-5" style="color:#808080">Email</span>
+                <br />
+                <span class="h3 m-0 p-0"> @Model.Email </span>
+            </p>
+            <p class="mt-4">
+                <span class="fs-5" style="color:#808080">Birth date</span>
+                <br />
+                <span class="h3 m-0 p-0"> @Model.BirthDate.Value.ToShortDateString() </span>
+            </p>
+
+            <p class="mt-4">
+                <span class="fs-5" style="color:#808080">Gender</span>
+                <br />
+                @if (Model.Gender == "M")
+                {
+                    <span class="h3 m-0 p-0" style="font-size:25px">Male</span>
+                }
+                else
+                {
+                    <span class="" style="font-size:25px">Female</span>
+                }
+
+            </p>
+            <p class="mt-4">
+                <span class="fs-5" style="color:#808080">Reporting Person</span>
+                <br />
+                <span class="h3 m-0 p-0">@Model.Employee2.FirstName @Model.Employee2.LastName </span>
+            </p>
+            <p class="mt-4">
+                <span class="fs-5" style="color:#808080">Designation</span>
+                <br />
+                <span class="h3 m-0 p-0">@Model.Role.Name </span>
+            </p>
+            @Html.ActionLink("Edit Profile", "EditProfile", "Director",
+                 new { id = @Model.EmployeeId }, new { @class = "btn btn-info" })
+        </div>
+
+    </div>
+   
+
+
+
+</div>
