@@ -9,6 +9,16 @@
         }
     </script>
 }
+@if (TempData["UserNotFound"] != null)
+{
+    <script>
+        $.notify("@TempData["UserNotFound"]", "success");
+        @{TempData["UserNotFound"] = null;
+        }
+    </script>
+}
+
+
 <p>
     <h3> Your Profile </h3>
 </p>

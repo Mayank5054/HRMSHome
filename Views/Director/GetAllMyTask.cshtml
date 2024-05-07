@@ -49,12 +49,11 @@
                 if (data.Status = "success") {
                     $(`#${id}`).remove();
                     $("#noDelete").click();
-                    $.notify("Task Deleted", "error");
+                    $.notify("Task Deleted","success");
                 }
             },
             error: function (data) {
-                $.notify("Something Went Wrong", "error");
-                $("#noDelete").click();
+                $.notify("Something Went Wrong","error");
                 console.log("Error Occured");
             }
         })

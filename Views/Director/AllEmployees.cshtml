@@ -63,12 +63,15 @@
             success: function (data) {
                 console.log($(this))
                 console.log(data);
-                if (data.status = "Success") {
+                if (data.status == "Success") {
                     $(`#${id}`).remove();
                     $("#noDelete").click();
 
-                    $.notify("Employee Deleted", "success");
-                    console.log("product deleted");
+                    $.notify(data.message, "success");
+                }
+                else {
+                    $("#noDelete").click();
+                    $.notify(data.message, "error");
                 }
             },
             error: function (data) {

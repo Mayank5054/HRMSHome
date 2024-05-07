@@ -150,11 +150,28 @@ namespace HRMS.Controllers
            
             if (emp != null)
             {
-               _db.Employees.Remove(emp);
-                _db.SaveChanges();
+
+                if (emp.DepartmentId == 2)
+                {
+                    return Json(new { status = "Failed", message = "Trying to delete Manager" }, JsonRequestBehavior.AllowGet);
+                }
+                else if(emp.DepartmentId == 1)
+                {
+                    return Json(new { status = "Failed", message = "Trying to delete Director" }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    _db.Employees.Remove(emp);
+                    _db.SaveChanges();
+                    return Json(new { status = "Success",message = "Employee Deleted" }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                return Json(new { status = "Failed", message = "Employee Not Found" }, JsonRequestBehavior.AllowGet);
             }
             //TempData["EmployeeDeleted"] = " Emeployee Deleted";
-            return Json(new { status = "Success" }, JsonRequestBehavior.AllowGet);
+           
             //return RedirectToAction("AllEmployees");
         }
 
@@ -346,7 +363,8 @@ namespace HRMS.Controllers
             if (userId == id)
             {
                 Employee _emp = _db.Employees.Find(id);
-                return View(_emp);
+                
+                    return View(_emp);
             }
             else
             {
