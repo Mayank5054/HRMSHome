@@ -1,9 +1,39 @@
 ﻿@using HRMS.Models;
 @model List<Task>
-    <p>
-        <h3> Your Tasks</h3>
-    </p>
+@if (TempData["LogInAsUser"] != null)
+{
     <script>
+        $.notify("@TempData["LogInAsUser"]", "success");
+        @{TempData["LogInAsUser"] = null;}
+    </script>
+}
+@if (TempData["TaskAdded"] != null)
+{
+    <script>
+        $.notify("@TempData["TaskAdded"]", "success");
+        @{TempData["TaskAdded"] = null;}
+    </script>
+}
+@if (TempData["TaskNotFound"] != null)
+{
+    <script>
+        $.notify("@TempData["TaskNotFound"]", "error");
+        @{TempData["TaskNotFound"] = null;}
+    </script>
+}
+@if (TempData["TaskUpdated"] != null)
+{
+    <script>
+        $.notify("@TempData["TaskUpdated"]", "success");
+        @{TempData["TaskUpdated"] = null;}
+    </script>
+}
+
+
+<p>
+    <h3> Your Tasks</h3>
+</p>
+<script>
     console.log("Hello world");
     function openModal(id) {
         $("#yesDelete").attr("onclick", `deleteProduct(${id})`)
@@ -16,16 +46,20 @@
             success: function (data) {
                 console.log($(this))
                 console.log(data);
-                $(`#${id}`).remove();
-                $("#noDelete").click();
-                console.log("product deleted");
+                if (data.Status = "success") {
+                    $(`#${id}`).remove();
+                    $("#noDelete").click();
+                    $.notify("Task Deleted", "error");
+                }
             },
             error: function (data) {
+                $.notify("Something Went Wrong", "error");
+                $("#noDelete").click();
                 console.log("Error Occured");
             }
         })
     }
-    </script>
+</script>
 <table class="table table-bordered">
     <tr>
         <th>Task Date</th>
@@ -63,35 +97,35 @@
             {
                 <td></td>
             }
-            
-            <td><span 
-                      class='@(i.Status == "Approved" ? "bg-success" : "bg-danger") ps-2 pe-3 d-flex align-items-center justify-content-center '  
-                      
-                      style="border-radius:100px;">@i.Status</span></td>
-            @if (i.ModifiedOn != null)
-            {
-                <td>@i.ModifiedOn.Value.ToShortDateString()</td>
-            }
-            else
-            {
-                <td></td>
-            }
 
             <td>
-                @Html.ActionLink("Edit", "EditTask", "Director",
-                   new { id = @i.TaskId }, new { @class = "btn btn-primary" })
-            </td>
-            <td>
-                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#myModal" onclick="openModal(@i.TaskId)">
-                    Delete
-                </button>
-                @*@Html.ActionLink("Delete", "DeleteTask", "Director",
-    new { id = @i.TaskId }, new { @class = "btn btn-danger" })*@
-            </td>
+                <span class='@(i.Status == "Approved" ? "bg-success" : "bg-danger") ps-2 pe-3 d-flex align-items-center justify-content-center '
+                      style="border-radius:100px;">@i.Status</span>
+                </td>
+                @if (i.ModifiedOn != null)
+                {
+                    <td>@i.ModifiedOn.Value.ToShortDateString()</td>
+                }
+                else
+                {
+                    <td></td>
+                }
 
-        </tr>
+                <td>
+                    @Html.ActionLink("Edit", "EditTask", "Director",
+                       new { id = @i.TaskId }, new { @class = "btn btn-primary" })
+                </td>
+                <td>
+                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#myModal" onclick="openModal(@i.TaskId)">
+                        Delete
+                    </button>
+                    @*@Html.ActionLink("Delete", "DeleteTask", "Director",
+                        new { id = @i.TaskId }, new { @class = "btn btn-danger" })*@
+                </td>
 
-    }
+            </tr>
+
+        }
 </table>
 
 <div class="modal" id="myModal">

@@ -1,6 +1,14 @@
 ﻿@using HRMS.Models;
 @model Employee
 
+@if (TempData["ProfileUpdated"] != null)
+{
+    <script>
+        $.notify("@TempData["ProfileUpdated"]", "success");
+        @{TempData["ProfileUpdated"] = null;
+        }
+    </script>
+}
 <p>
     <h3> Your Profile </h3>
 </p>
@@ -53,7 +61,7 @@
         </div>
 
     </div>
-   
+
 
 
 

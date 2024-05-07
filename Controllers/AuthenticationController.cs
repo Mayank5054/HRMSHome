@@ -29,6 +29,7 @@ namespace HRMS.Controllers
             Employee _emp = _db.Employees.Where(x => x.Email == _loginData.Email && x.Password==_loginData.Password).FirstOrDefault();
             if(_emp == null)
             {
+                ViewBag.NoValidUser = "Invalid User Credentials";
                 return View(_loginData);
             }
             else
@@ -40,14 +41,17 @@ namespace HRMS.Controllers
                 Session["ReportingPersonId"] = _emp.ReportingPerson;
                 if(_emp.DepartmentId == 1)
                 {
+                    TempData["LogInAsUser"] = "Logged In As A Director";
                     return RedirectToAction("AllEmployees", "Director");
                 }
                 else if(_emp.DepartmentId == 2)
                 {
+                    TempData["LogInAsUser"] = "Logged In As A Manager";
                     return RedirectToAction("GetAllTasks", "Director");
                 }
                 else
                 {
+                    TempData["LogInAsUser"] = "Logged In As A Employee";
                     return RedirectToAction("GetAllMyTask", "Director");
                 }
                

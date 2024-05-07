@@ -1,5 +1,20 @@
 ﻿@using HRMS.Models;
 @model List<Task>
+@if (TempData["LogInAsUser"] != null)
+{
+    <script>
+        $.notify("@TempData["LogInAsUser"]", "success");
+        @{TempData["LogInAsUser"] = null;}
+    </script>
+}
+@if (TempData["TaskStatus"] != null)
+{
+    <script>
+        $.notify("@TempData["TaskStatus"]", "success");
+        @{TempData["TaskStatus"] = null;}
+    </script>
+}
+
 <p>
     <h3>Approve Or Reject Tasks</h3>
 </p>
@@ -23,7 +38,7 @@
     </tr>
 
     @foreach (Task i in Model)
-    {  
+    {
         <tr id="@i.TaskId">
             <td>@i.Employee2.FirstName @i.Employee2.LastName</td>
             <td>@i.TaskDate.Value.ToShortDateString()</td>
@@ -47,27 +62,29 @@
             {
                 <td></td>
             }
-            <td><span class='@(i.Status == "Approved" ? "bg-success" : "bg-danger") ps-2 pe-3 d-flex align-items-center justify-content-center '
-      style="border-radius:100px;">@i.Status</span></td>
-            @if (i.ModifiedOn != null)
-            {
-                <td>@i.ModifiedOn.Value.ToShortDateString()</td>
-            }
-            else
-            {
-                <td></td>
-            }
-         
-        
             <td>
-                @Html.ActionLink("Approve", "ApproveTask", "Director",
-                   new { id = @i.TaskId, status = "Approved" }, new { @class = "btn btn-info" })
-            </td>
-            <td>
-                @Html.ActionLink("Reject", "ApproveTask", "Director",
-                   new { id = @i.TaskId, status = "Rejected" }, new { @class = "btn btn-danger" })
-            </td>
-        </tr>
+                <span class='@(i.Status == "Approved" ? "bg-success" : "bg-danger") ps-2 pe-3 d-flex align-items-center justify-content-center '
+                      style="border-radius:100px;">@i.Status</span>
+                </td>
+                @if (i.ModifiedOn != null)
+                {
+                    <td>@i.ModifiedOn.Value.ToShortDateString()</td>
+                }
+                else
+                {
+                    <td></td>
+                }
 
-    }
+
+                <td>
+                    @Html.ActionLink("Approve", "ApproveTask", "Director",
+                       new { id = @i.TaskId, status = "Approved" }, new { @class = "btn btn-info" })
+                </td>
+                <td>
+                    @Html.ActionLink("Reject", "ApproveTask", "Director",
+                       new { id = @i.TaskId, status = "Rejected" }, new { @class = "btn btn-danger" })
+                </td>
+            </tr>
+
+        }
 </table>

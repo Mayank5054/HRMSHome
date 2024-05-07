@@ -1,9 +1,55 @@
 ﻿
 @using HRMS.Models;
 @model List<Employee>
-    <p>
-        <h3> All Employees </h3>
-    </p>
+
+@if (TempData["LogInAsUser"] != null)
+{
+    <script>
+        $.notify("@TempData["LogInAsUser"]", "success");
+        @{TempData["logInAsUser"] = null;
+        }
+    </script>
+}
+
+@if (TempData["NewEmployeeAdded"] != null)
+{
+    <script>
+        $.notify("@TempData["NewEmployeeAdded"]", "success");
+
+            @{TempData["NewEmployeeAdded"] = null;}
+
+    </script>
+}
+@if (TempData["EmployeeEdited"] != null)
+{
+    <script>
+        $.notify("@TempData["EmployeeEdited"]", "success");
+
+            @{TempData["EmployeeEdited"] = null;
+            }
+
+    </script>
+}
+@if (TempData["EmployeeDeleted"] != null)
+{
+    <script>
+        $.notify("@TempData["EmployeeDeleted"]", "success");
+
+            @{TempData["EmployeeDeleted"] = null;
+            }
+
+    </script>
+}
+
+@if (ViewBag.NewEmployeeAdded != "")
+{
+    <script>
+        $.notify("@ViewBag.NewEmployeeAdded", "success");
+    </script>
+}
+<p>
+    <h3> All Employees </h3>
+</p>
 <script>
     console.log("Hello world");
     function openModal(id) {
@@ -17,11 +63,17 @@
             success: function (data) {
                 console.log($(this))
                 console.log(data);
-                $(`#${id}`).remove();
-                $("#noDelete").click();
-                console.log("product deleted");
+                if (data.status = "Success") {
+                    $(`#${id}`).remove();
+                    $("#noDelete").click();
+
+                    $.notify("Employee Deleted", "success");
+                    console.log("product deleted");
+                }
             },
             error: function (data) {
+                $("#noDelete").click();
+                $.notify("Something Went Wrong", "error");
                 console.log("Error Occured");
             }
         })
@@ -68,7 +120,7 @@
                     Delete
                 </button>
                 @*@Html.ActionLink("Delete", "DeleteEmployee", "Director",
-    new { id = @i.EmployeeId }, new { @class = "btn btn-danger" })*@
+                    new { id = @i.EmployeeId }, new { @class = "btn btn-danger" })*@
             </td>
         </tr>
 

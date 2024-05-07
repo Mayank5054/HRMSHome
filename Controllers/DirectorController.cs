@@ -45,30 +45,41 @@ namespace HRMS.Controllers
         [HttpPost]
         public ActionResult AddEmployee(Employee _emp)
         {
+            Employee emp = _db.Employees.Where(x => x.Email == _emp.Email).FirstOrDefault();
+            List<SelectListItem> role = _db.Roles.Select(
+     x => new SelectListItem
+     {
+         Text = x.Name,
+         Value = x.RoleId.ToString()
+     }).ToList();
+
+            List<SelectListItem> reportingPersons = _db.Employees.Where(x => (x.DepartmentId == 2 || x.DepartmentId == 1)).Select(
+    x => new SelectListItem
+    {
+        Text = x.FirstName + " " + x.LastName,
+        Value = x.EmployeeId.ToString()
+    }).ToList();
+            ViewBag.roles = role;
+            ViewBag.reportingPersons = reportingPersons;
+            if (emp != null)
+            {
+                //TempData["EmployeeExists"] = "User Already Exists";
+                ViewBag.EmployeeExists = " User Already Exists";
+                return View();
+
+            }
             if (ModelState.IsValid)
             {
                 _emp.EmployeeCode = "SIT-433";
                 _db.Employees.Add(_emp);
-                _db.SaveChanges();
-                return RedirectToAction("Index", "Home");
+                //_db.SaveChanges();
+                TempData["NewEmployeeAdded"] = "New Employee Added";
+                return RedirectToAction("AllEmployees", "Director");
             }
             else
             {
-                List<SelectListItem> role = _db.Roles.Select(
-              x => new SelectListItem
-              {
-                  Text = x.Name,
-                  Value = x.RoleId.ToString()
-              }).ToList();
-
-                List<SelectListItem> reportingPersons = _db.Employees.Where(x => (x.DepartmentId == 2 || x.DepartmentId == 1)).Select(
-        x => new SelectListItem
-        {
-            Text = x.FirstName + " " + x.LastName,
-            Value = x.EmployeeId.ToString()
-        }).ToList();
-                ViewBag.roles = role;
-                ViewBag.reportingPersons = reportingPersons;
+                ViewBag.SomethingWrong = "Something Wrong Happen";
+                //TempData["SomethingWrong"] = "Something Wrong Happen";
                 return View();
             }
            
@@ -114,8 +125,15 @@ namespace HRMS.Controllers
                     emp.DepartmentId = _emp.DepartmentId;
                     emp.ReportingPerson = _emp.ReportingPerson;
                     _db.SaveChanges();
+                    TempData["EmployeeEdited"] = " Emeployee Details Edited";
+                    return RedirectToAction("AllEmployees");
                 }
-                return RedirectToAction("AllEmployees");
+                else
+                {
+                    ViewBag.EmployeeMissing = "Emeployee Was Not Found";
+                    return View();
+                }
+                
             }
             else
             {
@@ -127,13 +145,17 @@ namespace HRMS.Controllers
         [@Authorize(new string[] { "Director" })]
         public ActionResult DeleteEmployee(int id)
         {
+
             Employee emp = _db.Employees.Find(id);
+           
             if (emp != null)
             {
                _db.Employees.Remove(emp);
                 _db.SaveChanges();
             }
-            return RedirectToAction("AllEmployees");
+            //TempData["EmployeeDeleted"] = " Emeployee Deleted";
+            return Json(new { status = "Success" }, JsonRequestBehavior.AllowGet);
+            //return RedirectToAction("AllEmployees");
         }
 
         [@Authorize(new string[] { "Director" })]
@@ -172,8 +194,10 @@ namespace HRMS.Controllers
                 _task.ApprovedORRejectedOn = currentDate;
                 _task.ModifiedOn= currentDate;
                 _db.SaveChanges();
+                TempData["TaskStatus"] = "Task Has Been " + status;
             }
             return RedirectToAction("GetAllTasks");
+
         }
         [@Authorize(new string[] { "Director", "Manager" })]
         public ActionResult RejectTask(int id)
@@ -217,6 +241,7 @@ namespace HRMS.Controllers
                 _task.ModifiedOn= currentDate;
                 _db.Tasks.Add( _task );
                 _db.SaveChanges();
+                TempData["TaskAdded"] = "Task Has Been Added";
                 return RedirectToAction("GetAllmYTask");
             }
             return View();
@@ -232,8 +257,25 @@ namespace HRMS.Controllers
         [@Authorize(new string[] { "Manager", "Employee" })]
         public ActionResult EditTask(int id)
         {
+            int userId = int.Parse(Session["userId"].ToString());
             Task _task = _db.Tasks.Find(id);
-            return View(_task);
+            if (_task != null)
+            {
+                if(_task.EmployeeId == userId)
+                {
+                    return View(_task);
+                }
+                else
+                {
+                    return Redirect("~/Authentication/Error404");
+                }
+            }
+            else
+            {
+                TempData["TaskNotFound"] = "Task Not Found In The Record";
+                return RedirectToAction("GetAllMyTask");
+            }
+            
         }
 
         [@Authorize(new string[] { "Manager", "Employee" })]
@@ -247,6 +289,7 @@ namespace HRMS.Controllers
                 _task.TaskName = task.TaskName;
                 _task.TaskDescription = task.TaskDescription;
                 _db.SaveChanges();
+                TempData["TaskUpdated"] = "Task Updated Successfully";
                 return RedirectToAction("GetAllMyTask");
             }
             return View(_task);
@@ -254,10 +297,24 @@ namespace HRMS.Controllers
         [@Authorize(new string[] { "Manager", "Employee" })]
         public ActionResult DeleteTask(int id)
         {
+            int userId = int.Parse(Session["userId"].ToString());
             Task _task = _db.Tasks.Find(id);
-            _db.Tasks.Remove(_task);
-            _db.SaveChanges();
+            if (_task != null)
+            {
+                if (_task.EmployeeId == userId)
+                {
+                    _db.Tasks.Remove(_task);
+                    _db.SaveChanges();
+                    return Json(new { Status = "success" }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Redirect("~/Authentication/Error404");
+                }
+            }
+            TempData["TaskNotFound"] = "Task Not Found In The Record";
             return RedirectToAction("GetAllMyTask");
+           
         }
 
         public ActionResult GetProfile()
@@ -326,9 +383,9 @@ namespace HRMS.Controllers
                     emp.BirthDate = _emp.BirthDate;
                 emp.Gender= _emp.Gender;
                     _db.SaveChanges();
+                TempData["ProfileUpdated"] = "Profile Updated Successfully";
                     return RedirectToAction("GetProfile");
                 }
-            
                 return View();
            
             

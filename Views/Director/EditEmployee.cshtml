@@ -1,36 +1,43 @@
 ﻿@using HRMS.Models
 @model Employee
-    <p><h3>Edit Employee Details</h3></p>
+@if (ViewBag.EmployeeMissing != "")
+{
+    <script>
+        $.notify("@ViewBag.EmployeeMissing", "success");
+    </script>
+}
+<p><h3>Edit Employee Details</h3></p>
+
 @using (Html.BeginForm("EditEmployee", "Director", FormMethod.Post))
 {
     @Html.TextBoxFor(x => x.EmployeeId, new { type = "hidden" })
     @*@Html.TextBoxFor(x => x.Email);
-    <br />
-    @Html.TextBoxFor(x => x.Password);
-    <br />
-    @Html.TextBoxFor(x => x.FirstName);
-    <br />
-    @Html.TextBoxFor(x => x.LastName);
-    <br />
+            <br />
+            @Html.TextBoxFor(x => x.Password);
+            <br />
+            @Html.TextBoxFor(x => x.FirstName);
+            <br />
+            @Html.TextBoxFor(x => x.LastName);
+            <br />
 
-    <br />
-    @Html.TextBoxFor(m => m.BirthDate, "{0:yyyy-MM-dd}", new { type = "date", })
-    <br />
-    @Html.RadioButtonFor(m => m.Gender, "M", new { @class = "" })
-    @Html.LabelFor(m => m.Gender, "Male")
-    @Html.RadioButtonFor(m => m.Gender, "F", new { @class = "ms-3" })
-    @Html.LabelFor(m => m.Gender, "Female")
-    <br />
-    @Html.DropDownListFor(
-    m => m.DepartmentId,
-    new SelectList(ViewBag.roles, "Value", "Text")
-    );
+            <br />
+            @Html.TextBoxFor(m => m.BirthDate, "{0:yyyy-MM-dd}", new { type = "date", })
+            <br />
+            @Html.RadioButtonFor(m => m.Gender, "M", new { @class = "" })
+            @Html.LabelFor(m => m.Gender, "Male")
+            @Html.RadioButtonFor(m => m.Gender, "F", new { @class = "ms-3" })
+            @Html.LabelFor(m => m.Gender, "Female")
+            <br />
+            @Html.DropDownListFor(
+            m => m.DepartmentId,
+            new SelectList(ViewBag.roles, "Value", "Text")
+            );
 
-    @Html.DropDownListFor(
-m => m.ReportingPerson,
-new SelectList(ViewBag.reportingPersons, "Value", "Text")
-);
-        *@
+            @Html.DropDownListFor(
+        m => m.ReportingPerson,
+        new SelectList(ViewBag.reportingPersons, "Value", "Text")
+        );
+    *@
 
     <div class="form-floating mt-3 mb-3">
 
