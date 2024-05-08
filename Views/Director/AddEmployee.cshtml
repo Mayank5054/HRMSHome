@@ -87,7 +87,7 @@
     <div class="form-floating mt-3 mb-3 ">
 
         <input type="date" name="BirthDate" class="form-control" />
-        <label class="control-label"> Create Date</label>
+        <label class="control-label"> Date Of Birth</label>
         @*@Html.TextBoxFor(model => model.BookTitle, new { @class = "form-control", style = "max-width:100%" })*@
         @Html.ValidationMessageFor(model => model.BirthDate, "", new { @class = "text-danger" })
     </div>
@@ -102,7 +102,7 @@
 
         @Html.DropDownListFor(model => model.DepartmentId,
           new SelectList(ViewBag.roles, "Value", "Text"),
-          new { @class = "form-control" })
+          new { @class = "form-control",@id="Department" })
         @Html.LabelFor(model => model.DepartmentId, htmlAttributes: new
 {
 @class = "control"
@@ -112,7 +112,7 @@
 
         @Html.DropDownListFor(model => model.ReportingPerson,
           new SelectList(ViewBag.reportingPersons, "Value", "Text"),
-          new { @class = "form-control" })
+          new { @class = "form-control", @id = "Reporting" })
         @Html.LabelFor(model => model.ReportingPerson, htmlAttributes: new
 {
  @class = "control"
@@ -121,3 +121,48 @@
     <button type="submit" class="btn btn-success">Add New User</button>
 }
 
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $("#Reporting").empty();
+            $("#Reporting")
+                .append($('<option ></option>')
+                    .attr('value', "1").text("Mayank Sheladiya"));
+        })
+    </script>
+    <script>
+        $("#Department").change(function (e) {
+            var id = $(this).val();
+            console.log(id);
+            $.ajax({
+                method: "GET",
+                url: "./GetReportingPersons/" + id,
+                success: (data) => {
+                    const jsonData = JSON.parse(data.reportingPersons);
+                    $("#Reporting").empty();
+                    if (jsonData.length == 0) {
+                        $("#Reporting")
+                            .append($('<option ></option>')
+                                .attr('value', "1").text("Mayank Sheladiya"));
+                    }
+                    else {
+                        jsonData.forEach((data) => {
+
+                            $("#Reporting")
+                                .append($('<option ></option>')
+                                    .attr('value', data.Value).text(data.Text));
+                            console.log(data);
+                        })
+                    }
+                   
+                    console.log(jsonData);
+                    console.log(data);
+                },
+                error: (err) => {
+                    console.log(err);
+                }
+             
+            })
+        })
+    </script>
+    }

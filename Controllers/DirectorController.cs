@@ -1,6 +1,7 @@
 ﻿using HRMS.Filters;
 using HRMS.Models;
 using Microsoft.Ajax.Utilities;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,7 +73,7 @@ namespace HRMS.Controllers
             {
                 _emp.EmployeeCode = "SIT-433";
                 _db.Employees.Add(_emp);
-                //_db.SaveChanges();
+                _db.SaveChanges();
                 TempData["NewEmployeeAdded"] = "New Employee Added";
                 return RedirectToAction("AllEmployees", "Director");
             }
@@ -409,7 +410,20 @@ namespace HRMS.Controllers
             
         }
 
-        
+        public ActionResult GetReportingPersons(int id)
+        {
+            List<SelectListItem> reportingPersons = _db.Employees.Where(x => x.DepartmentId < id).Select(
+     x => new SelectListItem
+     {
+         Text = x.FirstName + " " + x.LastName,
+         Value = x.EmployeeId.ToString()
+     }).ToList();
+            string jsonData = JsonConvert.SerializeObject(reportingPersons);
+
+            return Json(new { reportingPersons = jsonData }, JsonRequestBehavior.AllowGet);
+        }
+       
+
 
     }
 }

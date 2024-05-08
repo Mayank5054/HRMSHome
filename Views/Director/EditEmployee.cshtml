@@ -86,7 +86,7 @@ type = "date",
 
         @Html.DropDownListFor(model => model.DepartmentId,
           new SelectList(ViewBag.roles, "Value", "Text"),
-          new { @class = "form-control" })
+          new { @class = "form-control",@id= "Department" })
         @Html.LabelFor(model => model.DepartmentId, htmlAttributes: new
 {
 @class = "control"
@@ -96,7 +96,7 @@ type = "date",
 
         @Html.DropDownListFor(model => model.ReportingPerson,
           new SelectList(ViewBag.reportingPersons, "Value", "Text"),
-          new { @class = "form-control" })
+          new { @class = "form-control",@id="Reporting" })
         @Html.LabelFor(model => model.ReportingPerson, htmlAttributes: new
 {
  @class = "control"
@@ -104,4 +104,59 @@ type = "date",
     </div>
 
     <button type="submit" class="btn btn-info">Edit User</button>
+}
+@section Scripts{
+    
+    <script>
+        $(document).ready(function () {
+            var id = $("#Department").val();
+            if (id == 1) {
+                $("#Reporting").empty();
+                $("#Reporting")
+                    .append($('<option ></option>')
+                        .attr('value', "1").text("Mayank Sheladiya"));
+            }
+            else {
+                makeAnAjaxCall(id);
+            }
+         
+
+        })
+        $("#Department").change(function (e) {
+            var id = $(this).val();
+            makeAnAjaxCall(id);
+        })
+
+        function makeAnAjaxCall(id) {
+            $.ajax({
+                method: "GET",
+                url: "/Director/GetReportingPersons/" + id,
+                success: (data) => {
+                    const jsonData = JSON.parse(data.reportingPersons);
+                    $("#Reporting").empty();
+                    if (jsonData.length == 0) {
+                        $("#Reporting")
+                            .append($('<option ></option>')
+                                .attr('value', "1").text("Mayank Sheladiya"));
+                    }
+                    else {
+                        jsonData.forEach((data) => {
+
+                            $("#Reporting")
+                                .append($('<option ></option>')
+                                    .attr('value', data.Value).text(data.Text));
+                            console.log(data);
+                        })
+                    }
+
+                    console.log(jsonData);
+                    console.log(data);
+                },
+                error: (err) => {
+                    console.log(err);
+                }
+
+            })
+        }
+    </script>
 }
