@@ -13,7 +13,7 @@ namespace HRMS.Filters
          string[] _roles;
         public Authorize(string[] roles)
         {
-            _roles = roles;
+            _roles = roles; 
         }
         public void OnAuthorization(AuthorizationContext filterContext)
         {
