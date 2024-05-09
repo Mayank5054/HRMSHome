@@ -6,6 +6,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
+using System.Globalization;
+using System.Threading;
 namespace HRMS.Controllers
 {
     public class AuthenticationController : Controller
@@ -19,6 +21,10 @@ namespace HRMS.Controllers
         // GET: Authorization/Login
         public ActionResult Login()
         {
+            var cultureInfo = new CultureInfo("hi"); ;
+            Console.WriteLine(cultureInfo);
+            Thread.CurrentThread.CurrentUICulture = cultureInfo;
+            Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(cultureInfo.Name);
             return View();
         }
 

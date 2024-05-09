@@ -1,7 +1,9 @@
 ﻿
 @using HRMS.Models
 @model Employee
-
+@{ 
+    int userId = int.Parse(Session["userId"].ToString());
+}
 @if (ViewBag.EmployeeExists != "")
 {
     <script>
@@ -147,11 +149,14 @@
                     }
                     else {
                         jsonData.forEach((data) => {
-
-                            $("#Reporting")
-                                .append($('<option ></option>')
-                                    .attr('value', data.Value).text(data.Text));
                             console.log(data);
+                          
+                                $("#Reporting")
+                                    .append($('<option ></option>')
+                                        .attr('value', data.Value).text(data.Text));
+                                console.log(data);
+                           
+                           
                         })
                     }
                    

@@ -442,14 +442,20 @@ namespace HRMS.Controllers
 
         public ActionResult GetReportingPersons(int id)
         {
-            List<SelectListItem> reportingPersons = _db.Employees.Where(x => x.DepartmentId < id).Select(
-     x => new SelectListItem
-     {
-         Text = x.FirstName + " " + x.LastName,
-         Value = x.EmployeeId.ToString()
-     }).ToList();
-            string jsonData = JsonConvert.SerializeObject(reportingPersons);
+            int userId = int.Parse(Session["userId"].ToString());
+            Employee emp = _db.Employees.Find(userId);
+            string jsonData;
+           
+            
+                List<SelectListItem> reportingPersons = _db.Employees.Where(x => x.DepartmentId < id).Select(
+x => new SelectListItem
+{
+   Text = x.FirstName + " " + x.LastName,
+   Value = x.EmployeeId.ToString()
+}).ToList();
 
+                jsonData = JsonConvert.SerializeObject(reportingPersons);
+         
             return Json(new { reportingPersons = jsonData }, JsonRequestBehavior.AllowGet);
         }
       
