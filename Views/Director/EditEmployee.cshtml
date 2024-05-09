@@ -1,9 +1,10 @@
 ﻿@using HRMS.Models
 @model Employee
-@if (ViewBag.EmployeeMissing != "")
+@if (TempData["EmployeeMissing"] != "")
 {
     <script>
-        $.notify("@ViewBag.EmployeeMissing", "success");
+        $.notify("@TempData["EmployeeMissing"]", "error");
+        @{TempData["EmployeeMissing"] = null; }
     </script>
 }
 <p><h3>Edit Employee Details</h3></p>

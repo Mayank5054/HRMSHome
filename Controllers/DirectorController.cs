@@ -124,7 +124,7 @@ namespace HRMS.Controllers
             if (ModelState.IsValid)
             {
                 Employee emp = _db.Employees.Find(_emp.EmployeeId);
-                if (emp != null)
+                if (emp != null  && (_emp.DepartmentId < emp.DepartmentId))
                 {
                     emp.Email = _emp.Email;
                     emp.Password = _emp.Password;
@@ -140,8 +140,9 @@ namespace HRMS.Controllers
                 }
                 else
                 {
-                    ViewBag.EmployeeMissing = "Emeployee Was Not Found";
-                    return View();
+                    TempData["EmployeeMissing"] = "Can not Demote The Employee";
+                  
+                    return RedirectToAction("EditEmployee");
                 }
                 
             }
