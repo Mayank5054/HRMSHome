@@ -29,10 +29,23 @@
     </script>
 }
 
+<head>
+    <link rel="stylesheet" href="~/Content/assets/bootstrap/css/bootstrap.min.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="~/Content/assets/dist/css/AdminLTE.min.css">
+    <!-- AdminLTE Skins. Choose a skin from the css/skins
+         folder instead of downloading all of them to reduce the load. -->
+    <link rel="stylesheet" href="~/Content/assets/dist/css/skins/_all-skins.min.css">
+</head>
 
 <p>
     <h3> Your Tasks</h3>
 </p>
+
 <script>
     console.log("Hello world");
     function openModal(id) {
@@ -49,17 +62,17 @@
                 if (data.Status = "success") {
                     $(`#${id}`).remove();
                     $("#noDelete").click();
-                    $.notify("Task Deleted","success");
+                    $.notify("Task Deleted", "success");
                 }
             },
             error: function (data) {
-                $.notify("Something Went Wrong","error");
+                $.notify("Something Went Wrong", "error");
                 console.log("Error Occured");
             }
         })
     }
 </script>
-<table class="table table-bordered">
+<table class="table table-hover">
     <tr>
         <th>Task Date</th>
         <th>Task Name</th>
@@ -98,8 +111,24 @@
             }
 
             <td>
-                <span class='@(i.Status == "Approved" ? "bg-success" : "bg-danger") ps-2 pe-3 d-flex align-items-center justify-content-center '
-                      style="border-radius:100px;">@i.Status</span>
+                <span class='
+                       label
+                      @{
+                          if (i.Status == "Approved")
+                          {
+                          @:label-success
+                      }
+                          else if (i.Status == "Pending") {
+                              @:label-warning
+                        }
+                          else
+                          {
+                    @:label-danger
+                }
+                          }
+
+                      '
+                      >@i.Status</span>
                 </td>
                 @if (i.ModifiedOn != null)
                 {
@@ -144,3 +173,11 @@
         </div>
     </div>
 </div>
+
+        <script src="~/Content/assets/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+<!-- FastClick -->
+<script src="~/Content/assets/plugins/fastclick/fastclick.js"></script>
+<!-- AdminLTE App -->
+<script src="~/Content/assets/dist/js/app.min.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="~/Content/assets/dist/js/demo.js"></script>

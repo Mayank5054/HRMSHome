@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="MayankModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="MayankModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Employee">
           <Key>
             <PropertyRef Name="EmployeeId" />
@@ -19,6 +19,7 @@
           <Property Name="Gender" Type="char" MaxLength="1" />
           <Property Name="DepartmentId" Type="int" />
           <Property Name="ReportingPerson" Type="int" />
+          <Property Name="isDeleted" Type="bit" />
         </EntityType>
         <EntityType Name="Roles">
           <Key>
@@ -128,8 +129,7 @@
             <End Role="Tasks" EntitySet="Tasks" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="MayankModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -153,6 +153,7 @@
           <NavigationProperty Name="Tasks" Relationship="Self.FK__Tasks__ApprovedO__11158940" FromRole="Employee" ToRole="Tasks" />
           <NavigationProperty Name="Tasks1" Relationship="Self.FK__Tasks__ApproverI__10216507" FromRole="Employee" ToRole="Tasks" />
           <NavigationProperty Name="Tasks2" Relationship="Self.FK__Tasks__EmployeeI__0F2D40CE" FromRole="Employee" ToRole="Tasks" />
+          <Property Name="isDeleted" Type="Boolean" />
         </EntityType>
         <EntityType Name="Role">
           <Key>
@@ -275,6 +276,7 @@
           <EntitySetMapping Name="Employees">
             <EntityTypeMapping TypeName="MayankModel.Employee">
               <MappingFragment StoreEntitySet="Employee">
+                <ScalarProperty Name="isDeleted" ColumnName="isDeleted" />
                 <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
                 <ScalarProperty Name="EmployeeCode" ColumnName="EmployeeCode" />
                 <ScalarProperty Name="Email" ColumnName="Email" />

@@ -114,16 +114,18 @@
 
             <td>@i.Role.Name</td>
             <td>@i.Employee2.FirstName @i.Employee2.LastName</td>
+           
             <td>
                 @Html.ActionLink("Edit", "EditEmployee", "Director",
                    new { id = @i.EmployeeId }, new { @class = "btn btn-primary" })
+
             </td>
             <td>
                 <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#myModal" onclick="openModal(@i.EmployeeId)">
                     Delete
                 </button>
                 @*@Html.ActionLink("Delete", "DeleteEmployee", "Director",
-                    new { id = @i.EmployeeId }, new { @class = "btn btn-danger" })*@
+            new { id = @i.EmployeeId }, new { @class = "btn btn-danger" })*@
             </td>
         </tr>
 

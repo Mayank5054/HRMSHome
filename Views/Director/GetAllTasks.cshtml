@@ -15,10 +15,26 @@
     </script>
 }
 
+@if (TempData["UnAuthorized"] != null)
+{
+    <script>
+        $.notify("@TempData["UnAuthorized"]", "error");
+        @{TempData["UnAuthorized"] = null;}
+    </script>
+}
+@if (TempData["TaskApprovedByDirector"] != null)
+{
+    <script>
+        $.notify("@TempData["TaskApprovedByDirector"]", "error");
+        @{TempData["TaskApprovedByDirector"] = null;}
+    </script>
+}
+
+
 <p>
     <h3>Approve Or Reject Tasks</h3>
 </p>
-<table class="table table-bordered">
+<table class="table table-bordered ">
     <tr>
         <th>Employee Name</th>
         <th>Task Date</th>
@@ -63,28 +79,63 @@
                 <td></td>
             }
             <td>
-                <span class='@(i.Status == "Approved" ? "bg-success" : "bg-danger") ps-2 pe-3 d-flex align-items-center justify-content-center '
-                      style="border-radius:100px;">@i.Status</span>
-                </td>
-                @if (i.ModifiedOn != null)
-                {
-                    <td>@i.ModifiedOn.Value.ToShortDateString()</td>
-                }
-                else
-                {
-                    <td></td>
-                }
-
-
-                <td>
-                    @Html.ActionLink("Approve", "ApproveTask", "Director",
-                       new { id = @i.TaskId, status = "Approved" }, new { @class = "btn btn-info" })
-                </td>
-                <td>
-                    @Html.ActionLink("Reject", "ApproveTask", "Director",
-                       new { id = @i.TaskId, status = "Rejected" }, new { @class = "btn btn-danger" })
-                </td>
-            </tr>
-
+                <span class='
+       label
+      @{
+          if (i.Status == "Approved")
+          {
+          @:label-success
+      }
+          else if (i.Status == "Pending") {
+              @:label-warning
         }
+          else
+          {
+    @:label-danger
+}
+          }
+
+      '>@i.Status</span>
+
+</td>
+@if (i.ModifiedOn != null)
+{
+    <td>@i.ModifiedOn.Value.ToShortDateString()</td>
+}
+else
+{
+    <td></td>
+}
+@{
+    int userId = int.Parse(Session["userId"].ToString());
+    int roleId = int.Parse(Session["RoleId"].ToString());
+    if (roleId != 1 && i.Employee.DepartmentId == 1)
+    {
+        <td>
+            @Html.ActionLink("Approve", "ApproveTask", "Director",
+               new { id = @i.TaskId, status = "Approved" }, new { @class = "btn btn-outline-info", @disabled = "disabled" })
+        </td>
+        <td>
+            @Html.ActionLink("Reject", "ApproveTask", "Director",
+               new { id = @i.TaskId, status = "Rejected" }, new { @class = "btn btn-outline-danger", @disabled = "disabled" })
+        </td>
+    }
+    else
+    {
+        <td>
+            @Html.ActionLink("Approve", "ApproveTask", "Director",
+               new { id = @i.TaskId, status = "Approved" }, new { @class = "btn btn-outline-info" })
+        </td>
+        <td>
+            @Html.ActionLink("Reject", "ApproveTask", "Director",
+               new { id = @i.TaskId, status = "Rejected" }, new { @class = "btn btn-outline-danger" })
+        </td>
+    }
+}
+        })
+
+
+</tr>
+
+}
 </table>

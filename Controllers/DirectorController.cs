@@ -1,11 +1,13 @@
 ﻿using HRMS.Filters;
 using HRMS.Models;
+using HRMS.Security;
 using Microsoft.Ajax.Utilities;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-
+using System.Security.Cryptography;
 using System.Web;
 using System.Web.Mvc;
 
@@ -71,9 +73,16 @@ namespace HRMS.Controllers
             }
             if (ModelState.IsValid)
             {
-                _emp.EmployeeCode = "SIT-433";
+                string cipherText = EncryptionHelper.Encrypt(_emp.Password);
+                Console.WriteLine(cipherText);
+                string decryptedText = EncryptionHelper.Decrypt(cipherText);
+                Console.WriteLine(decryptedText);
+
+                int totalCount = _db.Employees.ToList().Count();
+                _emp.EmployeeCode = "SIT-"+(totalCount+1);
+                _emp.isDeleted = false;
                 _db.Employees.Add(_emp);
-                _db.SaveChanges();
+                _db.SaveChanges(); 
                 TempData["NewEmployeeAdded"] = "New Employee Added";
                 return RedirectToAction("AllEmployees", "Director");
             }
@@ -154,7 +163,10 @@ namespace HRMS.Controllers
 
                 if (emp.DepartmentId == 2)
                 {
-                    return Json(new { status = "Failed", message = "Trying to delete Manager" }, JsonRequestBehavior.AllowGet);
+                    emp.isDeleted = true;
+                    _db.SaveChanges();
+                    return Json(new { status = "Success", message = "Manager deleted" }, JsonRequestBehavior.AllowGet);
+
                 }
                 else if(emp.DepartmentId == 1)
                 {
@@ -162,7 +174,8 @@ namespace HRMS.Controllers
                 }
                 else
                 {
-                    _db.Employees.Remove(emp);
+                    emp.isDeleted = true;
+                    //_db.Employees.Remove(emp);
                     _db.SaveChanges();
                     return Json(new { status = "Success",message = "Employee Deleted" }, JsonRequestBehavior.AllowGet);
                 }
@@ -171,16 +184,13 @@ namespace HRMS.Controllers
             {
                 return Json(new { status = "Failed", message = "Employee Not Found" }, JsonRequestBehavior.AllowGet);
             }
-            //TempData["EmployeeDeleted"] = " Emeployee Deleted";
-           
-            //return RedirectToAction("AllEmployees");
         }
 
         [@Authorize(new string[] { "Director" })]
         public ActionResult AllEmployees()
         {
-            List<Employee> _emp = _db.Employees
-                .Include("Employee2")
+            List<Employee> _emp = _db.Employees.Include("Employee2")
+                .Where(x => x.isDeleted != true)
                 .ToList();
             return View(_emp);
         }
@@ -189,13 +199,23 @@ namespace HRMS.Controllers
         public ActionResult GetAllTasks()
         {
             int roleId = int.Parse(Session["RoleId"].ToString());
-           
-            List<HRMS.Models.Task> _taskData = _db.Tasks
-                 .Include("Employee2")
-                 .Include("Employee")
-                .Where(x => x.Employee2.DepartmentId > roleId)
-                .ToList();
-            return View(_taskData);
+           if(roleId != 2)
+            {
+                List<HRMS.Models.Task> _taskData = _db.Tasks
+                            .Include("Employee2")
+                            .Include("Employee")
+                           .Where(x => x.Employee2.DepartmentId > roleId)
+                           .ToList();
+                return View(_taskData);
+            }
+            else
+            {
+                int userId = int.Parse(Session["userId"].ToString());
+                List<HRMS.Models.Task> _taskData = _db.Tasks
+                          .Where(x => x.ApproverID == userId)
+                          .ToList();
+                return View(_taskData);
+            }
         }
 
         [@Authorize(new string[] { "Director","Manager" })]
@@ -203,19 +223,29 @@ namespace HRMS.Controllers
         {
             Task _task = _db.Tasks.Find(id);
             int userId = int.Parse(Session["userId"].ToString());
+            int roleId = int.Parse(Session["RoleId"].ToString());
             DateTime currentDate = DateTime.Now;
             string customShortDateString = currentDate.ToString("yyyy-MM-dd");
-            if (_task != null)
+           if(_task.ApprovedORRejectedBy != null && _task.ApprovedORRejectedBy == 1)
             {
-                _task.ApprovedORRejectedBy = userId;
-                _task.Status = status;
-                _task.ApprovedORRejectedOn = currentDate;
-                _task.ModifiedOn= currentDate;
-                _db.SaveChanges();
-                TempData["TaskStatus"] = "Task Has Been " + status;
+                    TempData["TaskApprovedByDirector"] = "Tasks Approved By Director Can Not Be Altered " ;
+                    return RedirectToAction("GetAllTasks");
             }
-            return RedirectToAction("GetAllTasks");
-
+            else
+            {
+                if (_task != null && (_task.ApproverID == userId || roleId == 1))
+                {
+                    _task.ApprovedORRejectedBy = userId;
+                    _task.Status = status;
+                    _task.ApprovedORRejectedOn = currentDate;
+                    _task.ModifiedOn = currentDate;
+                    _db.SaveChanges();
+                    TempData["TaskStatus"] = "Task Has Been " + status;
+                    return RedirectToAction("GetAllTasks");
+                }
+                TempData["UnAuthorized"] = "UnAuthorized ";
+                return RedirectToAction("GetAllTasks");
+            }
         }
         [@Authorize(new string[] { "Director", "Manager" })]
         public ActionResult RejectTask(int id)
@@ -277,7 +307,7 @@ namespace HRMS.Controllers
         {
             int userId = int.Parse(Session["userId"].ToString());
             Task _task = _db.Tasks.Find(id);
-            if (_task != null)
+            if (_task != null && userId != null)
             {
                 if(_task.EmployeeId == userId)
                 {
@@ -422,8 +452,6 @@ namespace HRMS.Controllers
 
             return Json(new { reportingPersons = jsonData }, JsonRequestBehavior.AllowGet);
         }
-       
-
-
+      
     }
 }

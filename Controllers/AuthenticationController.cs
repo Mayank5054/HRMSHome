@@ -26,7 +26,7 @@ namespace HRMS.Controllers
         [HttpPost]
         public ActionResult Login(LoginUser _loginData)
         {
-            Employee _emp = _db.Employees.Where(x => x.Email == _loginData.Email && x.Password==_loginData.Password).FirstOrDefault();
+            Employee _emp = _db.Employees.Where(x => (x.Email == _loginData.Email && x.Password==_loginData.Password && x.isDeleted != true)).FirstOrDefault();
             if(_emp == null)
             {
                 ViewBag.NoValidUser = "Invalid User Credentials";

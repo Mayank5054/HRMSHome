@@ -9,9 +9,26 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/jqueryval")
+    <link rel="stylesheet" href="~/Content/assets/bootstrap/css/bootstrap.min.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="~/Content/assets/dist/css/AdminLTE.min.css">
+    <!-- AdminLTE Skins. Choose a skin from the css/skins
+         folder instead of downloading all of them to reduce the load. -->
+    <link rel="stylesheet" href="~/Content/assets/dist/css/skins/_all-skins.min.css">
     <script src="~/Scripts/notify.js"></script>
+    <script src="~/Content/assets/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+    <!-- FastClick -->
+    <script src="~/Content/assets/plugins/fastclick/fastclick.js"></script>
+    <!-- AdminLTE App -->
+    <script src="~/Content/assets/dist/js/app.min.js"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="~/Content/assets/dist/js/demo.js"></script>
 </head>
-<body>
+<body >
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
         <div class="container">
             @Html.ActionLink("HRMS", "GetProfile", "Director", new { area = "" }, new { @class = "navbar-brand" })
@@ -33,6 +50,7 @@
                         {
                             <li>@Html.ActionLink("Add Tasks", "AddTask", "Director", new { area = "" }, new { @class = "nav-link" })</li>
                             <li>@Html.ActionLink("My Taks", "GetAlLMyTask", "Director", new { area = "" }, new { @class = "nav-link" })</li>
+                           
                         }
                     }
 
