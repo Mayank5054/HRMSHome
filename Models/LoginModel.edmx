@@ -44,6 +44,24 @@
           <Property Name="CreatedOn" Type="date" />
           <Property Name="ModifiedOn" Type="date" />
         </EntityType>
+        <EntityType Name="Teams">
+          <Key>
+            <PropertyRef Name="TeamId" />
+          </Key>
+          <Property Name="TeamId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TeamLeader" Type="int" />
+          <Property Name="CreationDate" Type="date" />
+          <Property Name="TeamName" Type="varchar" MaxLength="30" />
+        </EntityType>
+        <EntityType Name="TeamsDetails">
+          <Key>
+            <PropertyRef Name="TeamMemberId" />
+          </Key>
+          <Property Name="TeamMemberId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TeamId" Type="int" />
+          <Property Name="EmployeeId" Type="int" />
+          <Property Name="AssignedRole" Type="varchar" MaxLength="50" />
+        </EntityType>
         <Association Name="FK__Employee__Depart__0B5CAFEA">
           <End Role="Roles" Type="Self.Roles" Multiplicity="0..1" />
           <End Role="Employee" Type="Self.Employee" Multiplicity="*" />
@@ -104,10 +122,48 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK__Teams__TeamLeade__15DA3E5D">
+          <End Role="Employee" Type="Self.Employee" Multiplicity="0..1" />
+          <End Role="Teams" Type="Self.Teams" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Employee">
+              <PropertyRef Name="EmployeeId" />
+            </Principal>
+            <Dependent Role="Teams">
+              <PropertyRef Name="TeamLeader" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__TeamsDeat__Emplo__19AACF41">
+          <End Role="Employee" Type="Self.Employee" Multiplicity="0..1" />
+          <End Role="TeamsDetails" Type="Self.TeamsDetails" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Employee">
+              <PropertyRef Name="EmployeeId" />
+            </Principal>
+            <Dependent Role="TeamsDetails">
+              <PropertyRef Name="EmployeeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__TeamsDeat__TeamI__18B6AB08">
+          <End Role="Teams" Type="Self.Teams" Multiplicity="0..1" />
+          <End Role="TeamsDetails" Type="Self.TeamsDetails" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Teams">
+              <PropertyRef Name="TeamId" />
+            </Principal>
+            <Dependent Role="TeamsDetails">
+              <PropertyRef Name="TeamId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="MayankModelStoreContainer">
           <EntitySet Name="Employee" EntityType="Self.Employee" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Roles" EntityType="Self.Roles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tasks" EntityType="Self.Tasks" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Teams" EntityType="Self.Teams" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TeamsDetails" EntityType="Self.TeamsDetails" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK__Employee__Depart__0B5CAFEA" Association="Self.FK__Employee__Depart__0B5CAFEA">
             <End Role="Roles" EntitySet="Roles" />
             <End Role="Employee" EntitySet="Employee" />
@@ -127,6 +183,18 @@
           <AssociationSet Name="FK__Tasks__EmployeeI__0F2D40CE" Association="Self.FK__Tasks__EmployeeI__0F2D40CE">
             <End Role="Employee" EntitySet="Employee" />
             <End Role="Tasks" EntitySet="Tasks" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Teams__TeamLeade__15DA3E5D" Association="Self.FK__Teams__TeamLeade__15DA3E5D">
+            <End Role="Employee" EntitySet="Employee" />
+            <End Role="Teams" EntitySet="Teams" />
+          </AssociationSet>
+          <AssociationSet Name="FK__TeamsDeat__Emplo__19AACF41" Association="Self.FK__TeamsDeat__Emplo__19AACF41">
+            <End Role="Employee" EntitySet="Employee" />
+            <End Role="TeamsDetails" EntitySet="TeamsDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK__TeamsDeat__TeamI__18B6AB08" Association="Self.FK__TeamsDeat__TeamI__18B6AB08">
+            <End Role="Teams" EntitySet="Teams" />
+            <End Role="TeamsDetails" EntitySet="TeamsDetails" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -154,6 +222,8 @@
           <NavigationProperty Name="Tasks1" Relationship="Self.FK__Tasks__ApproverI__10216507" FromRole="Employee" ToRole="Tasks" />
           <NavigationProperty Name="Tasks2" Relationship="Self.FK__Tasks__EmployeeI__0F2D40CE" FromRole="Employee" ToRole="Tasks" />
           <Property Name="isDeleted" Type="Boolean" />
+          <NavigationProperty Name="Teams" Relationship="MayankModel.FK__Teams__TeamLeade__15DA3E5D" FromRole="Employee" ToRole="Team" />
+          <NavigationProperty Name="TeamsDetails" Relationship="MayankModel.FK__TeamsDeat__Emplo__19AACF411" FromRole="Employee" ToRole="TeamsDetail" />
         </EntityType>
         <EntityType Name="Role">
           <Key>
@@ -266,7 +336,79 @@
             <End Role="Employee" EntitySet="Employees" />
             <End Role="Tasks" EntitySet="Tasks" />
           </AssociationSet>
+          <EntitySet Name="Teams" EntityType="MayankModel.Team" />
+          <AssociationSet Name="FK__Teams__TeamLeade__15DA3E5D" Association="MayankModel.FK__Teams__TeamLeade__15DA3E5D">
+            <End Role="Employee" EntitySet="Employees" />
+            <End Role="Team" EntitySet="Teams" />
+          </AssociationSet>
+          <EntitySet Name="TeamsDetails" EntityType="MayankModel.TeamsDetail" />
+          <AssociationSet Name="FK__TeamsDeat__Emplo__19AACF411" Association="MayankModel.FK__TeamsDeat__Emplo__19AACF411">
+            <End Role="Employee" EntitySet="Employees" />
+            <End Role="TeamsDetail" EntitySet="TeamsDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK__TeamsDeat__TeamI__18B6AB081" Association="MayankModel.FK__TeamsDeat__TeamI__18B6AB081">
+            <End Role="Team" EntitySet="Teams" />
+            <End Role="TeamsDetail" EntitySet="TeamsDetails" />
+          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="Team">
+          <Key>
+            <PropertyRef Name="TeamId" />
+          </Key>
+          <Property Name="TeamId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TeamLeader" Type="Int32" />
+          <Property Name="CreationDate" Type="DateTime" Precision="0" />
+          <NavigationProperty Name="Employee" Relationship="MayankModel.FK__Teams__TeamLeade__15DA3E5D" FromRole="Team" ToRole="Employee" />
+          <NavigationProperty Name="TeamsDetails" Relationship="MayankModel.FK__TeamsDeat__TeamI__18B6AB081" FromRole="Team" ToRole="TeamsDetail" />
+          <Property Name="TeamName" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <Association Name="FK__Teams__TeamLeade__15DA3E5D">
+          <End Type="MayankModel.Employee" Role="Employee" Multiplicity="0..1" />
+          <End Type="MayankModel.Team" Role="Team" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Employee">
+              <PropertyRef Name="EmployeeId" />
+            </Principal>
+            <Dependent Role="Team">
+              <PropertyRef Name="TeamLeader" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="TeamsDetail">
+          <Key>
+            <PropertyRef Name="TeamMemberId" />
+          </Key>
+          <Property Name="TeamMemberId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TeamId" Type="Int32" />
+          <Property Name="EmployeeId" Type="Int32" />
+          <Property Name="AssignedRole" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Employee" Relationship="MayankModel.FK__TeamsDeat__Emplo__19AACF411" FromRole="TeamsDetail" ToRole="Employee" />
+          <NavigationProperty Name="Team" Relationship="MayankModel.FK__TeamsDeat__TeamI__18B6AB081" FromRole="TeamsDetail" ToRole="Team" />
+        </EntityType>
+        <Association Name="FK__TeamsDeat__Emplo__19AACF411">
+          <End Type="MayankModel.Employee" Role="Employee" Multiplicity="0..1" />
+          <End Type="MayankModel.TeamsDetail" Role="TeamsDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Employee">
+              <PropertyRef Name="EmployeeId" />
+            </Principal>
+            <Dependent Role="TeamsDetail">
+              <PropertyRef Name="EmployeeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__TeamsDeat__TeamI__18B6AB081">
+          <End Type="MayankModel.Team" Role="Team" Multiplicity="0..1" />
+          <End Type="MayankModel.TeamsDetail" Role="TeamsDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Team">
+              <PropertyRef Name="TeamId" />
+            </Principal>
+            <Dependent Role="TeamsDetail">
+              <PropertyRef Name="TeamId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -312,6 +454,26 @@
                 <ScalarProperty Name="Status" ColumnName="Status" />
                 <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
                 <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Teams">
+            <EntityTypeMapping TypeName="MayankModel.Team">
+              <MappingFragment StoreEntitySet="Teams">
+                <ScalarProperty Name="TeamName" ColumnName="TeamName" />
+                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
+                <ScalarProperty Name="TeamLeader" ColumnName="TeamLeader" />
+                <ScalarProperty Name="TeamId" ColumnName="TeamId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TeamsDetails">
+            <EntityTypeMapping TypeName="MayankModel.TeamsDetail">
+              <MappingFragment StoreEntitySet="TeamsDetails">
+                <ScalarProperty Name="AssignedRole" ColumnName="AssignedRole" />
+                <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
+                <ScalarProperty Name="TeamId" ColumnName="TeamId" />
+                <ScalarProperty Name="TeamMemberId" ColumnName="TeamMemberId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

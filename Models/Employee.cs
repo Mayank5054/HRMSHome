@@ -21,6 +21,8 @@ namespace HRMS.Models
             this.Tasks = new HashSet<Task>();
             this.Tasks1 = new HashSet<Task>();
             this.Tasks2 = new HashSet<Task>();
+            this.Teams = new HashSet<Team>();
+            this.TeamsDetails = new HashSet<TeamsDetail>();
         }
     
         public int EmployeeId { get; set; }
@@ -45,5 +47,9 @@ namespace HRMS.Models
         public virtual ICollection<Task> Tasks1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Task> Tasks2 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Team> Teams { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TeamsDetail> TeamsDetails { get; set; }
     }
 }

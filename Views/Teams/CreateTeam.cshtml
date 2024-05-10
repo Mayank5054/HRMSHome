@@ -1,0 +1,112 @@
+﻿@using HRMS.Models
+@model Team
+
+@if (ViewBag.NotEnoughEmployees != null)
+{
+    <script>
+                    $.notify("@ViewBag.NotEnoughEmployees", "error");
+    </script>
+}
+@if (ViewBag.TeamLeaderHasATeam != null)
+{
+    <script>
+                    $.notify("@ViewBag.TeamLeaderHasATeam", "error");
+    </script>
+}
+
+@using (Html.BeginForm("CreateTeam", "Teams", FormMethod.Post, new
+{
+    @id = "CreateTeamForm"
+}))
+{
+
+    <div class="form-floating mt-3 mb-3">
+
+        @Html.TextBoxFor(model => model.TeamName, new { id = "Email", @class = "form-control", style = "max-width:100%;height:50px !important", placeholder = "" })
+        @Html.LabelFor(model => model.TeamName, htmlAttributes: new { @class = "control-label" })
+        @Html.ValidationMessageFor(model => model.TeamName, "", new { @class = "text-danger" })
+    </div>
+    <div class="form-floating mt-3 mb-3">
+        @Html.DropDownListFor(model => model.TeamLeader,
+          new SelectList(ViewBag.Managers, "Value", "Text"),
+          new { @class = "form-control", @id = "TeamLeader", style = "height:50px !important" })
+        @Html.LabelFor(model => model.TeamLeader, htmlAttributes: new
+{
+@class = "control"
+})
+        @Html.ValidationMessageFor(model => model.TeamLeader, "", new { @class = "text-danger" })
+    </div>
+    <div class="d-flex align-items-center">
+        <div class="form-floating mt-3 mb-3 w-50">
+            <select class="form-control" id="EmployeeList" name="EmployeeList" disabled="disabled" style="height:50px !important">
+            </select>
+            <label for="EmployeeList">Select Employee</label>
+        </div>
+        <button class="btn btn-info" type="button" id="addButton" disabled="disabled">Add To List</button>
+    </div>
+    <div id="DisplayAddedEmployee" class="d-flex p-2 flex-wrap" style="border:1px solid black">
+    </div>
+    <select multiple id="selectedEmployee" name="selectedEmployee" style="display:none">
+    </select>
+
+    <button type="submit" class="btn btn-info mt-3">Create A Team</button>
+}
+@section Scripts{
+    <script>
+        $("#TeamLeader").change(function () {
+            var id = $(this).val();
+            $.ajax({
+                method: "GET",
+                url: "/Teams/GetEmployeeByReportingPerson/" + id,
+                success: function (data) {
+                    if (data.status == "Success") {
+                        const EmployeeData = JSON.parse(data.Employees);
+                        $("#EmployeeList").removeAttr("disabled");
+                        $("#addButton").removeAttr("disabled");
+
+                        $("#EmployeeList").empty();
+                        $("#DisplayAddedEmployee").empty();
+
+
+                        $("#selectedEmployee").empty();
+                        EmployeeData.forEach(
+                            emp => {
+                                $("#EmployeeList")
+                                    .append(
+                                        $("<option></option>")
+                                            .attr("value", emp.Value)
+                                            .text(emp.Text)
+                                    )
+                            }
+                        )
+                        console.log(EmployeeData);
+                        //data.Employees.ForEach((emp) => {
+                        //
+                        //})
+                    }
+
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            })
+        })
+        $("#addButton").click(function () {
+            var val = $("#EmployeeList").text();
+            const value = $("#EmployeeList").val();
+            const name = $("#EmployeeList option:selected").text();
+            $("#EmployeeList option:selected").remove();
+            $("#DisplayAddedEmployee").append(
+                `
+                            <div class="ms-2 p-3 d-flex align-items-center justify-content-center" style=" height:30px;min-width:100px;background:grey;border-radius:5px;">
+                           ${name}
+                            </div>
+                            `
+            )
+            $("#selectedEmployee").append(
+                `<option value="${value}" selected> </option>`
+            )
+
+        })
+    </script>
+}

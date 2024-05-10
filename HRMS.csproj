@@ -131,8 +131,11 @@
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\DirectorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\TeamsController.cs" />
     <Compile Include="ExtendedModels\Employee.cs" />
     <Compile Include="ExtendedModels\Task.cs" />
+    <Compile Include="ExtendedModels\Team.cs" />
+    <Compile Include="ExtendedModels\TeamsDetail.cs" />
     <Compile Include="Filters\Authorize.cs" />
     <Compile Include="Filters\LoginFilter.cs" />
     <Compile Include="Global.asax.cs">
@@ -161,6 +164,12 @@
       <DependentUpon>LoginModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Task.cs">
+      <DependentUpon>LoginModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Team.cs">
+      <DependentUpon>LoginModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TeamsDetail.cs">
       <DependentUpon>LoginModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -251,6 +260,10 @@
     <Content Include="Views\Director\EditEmployee.cshtml" />
     <Content Include="Views\Director\GetProfile.cshtml" />
     <Content Include="Views\Director\EditProfile.cshtml" />
+    <Content Include="Views\Teams\CreateTeam.cshtml" />
+    <Content Include="Views\Teams\GetMyTeams.cshtml" />
+    <Content Include="Views\Teams\GetTeamDetails.cshtml" />
+    <Content Include="Views\Teams\EditAssignedRole.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

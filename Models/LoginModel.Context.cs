@@ -28,5 +28,7 @@ namespace HRMS.Models
         public virtual DbSet<Employee> Employees { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<Task> Tasks { get; set; }
+        public virtual DbSet<Team> Teams { get; set; }
+        public virtual DbSet<TeamsDetail> TeamsDetails { get; set; }
     }
 }

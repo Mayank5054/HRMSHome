@@ -1,0 +1,34 @@
+﻿@using HRMS.Models;
+@model Team
+@{
+    int roleId = int.Parse(Session["RoleId"].ToString());
+}
+<h3>@Model.TeamName</h3>
+<table class="table table-hover">
+    <tr>
+        <th>Emloyee Name</th>
+        <th>Assigned Role</th>
+        @{
+            if (roleId == 2)
+            {
+                <th>Edit Role</th>
+            }
+        }
+
+    </tr>
+
+    @foreach (TeamsDetail i in Model.TeamsDetails)
+    {
+        <tr id="@i.TeamId">
+            <td>@i.Employee.FirstName @i.Employee.LastName</td>
+            <td>@i.AssignedRole</td>
+            @{
+                if (roleId == 2)
+                {
+                        <td>@Html.ActionLink("Change Role", "EditAssignedRole", "Teams", new { id = i.TeamMemberId }, null)</td>
+                }
+            }
+            
+        </tr>
+    }
+</table>

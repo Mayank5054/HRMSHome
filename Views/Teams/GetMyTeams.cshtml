@@ -1,0 +1,102 @@
+﻿@using HRMS.Models;
+@model List<Team>
+
+@{
+    int roleId = int.Parse(Session["RoleId"].ToString());
+    if (TempData["TeamCreated"] != null)
+    {
+        <script>
+        $.notify("@TempData["TeamCreated"]", "success");
+
+            @{TempData["TeamCreated"] = null;}
+
+        </script>
+    }
+}
+
+<script>
+    console.log("Hello world");
+    function openModal(id) {
+        $("#yesDelete").attr("onclick", `deleteProduct(${id})`)
+    }
+    function deleteProduct(id) {
+        console.log($(this))
+        $.ajax({
+            method: "GET",
+            url: "/Teams/DeleteTeam/" + id,
+            success: function (data) {
+                console.log($(this))
+                console.log(data);
+                if (data.status == "Success") {
+                    $(`#${id}`).remove();
+                    $("#noDelete").click();
+
+                    $.notify(data.message, "success");
+                }
+                else {
+                    $("#noDelete").click();
+                    $.notify(data.message, "error");
+                }
+            },
+            error: function (data) {
+                $("#noDelete").click();
+                $.notify("Something Went Wrong", "error");
+                console.log("Error Occured");
+            }
+        })
+    }
+</script>
+<table class="table table-hover">
+    <tr>
+
+        <th>Team Date</th>
+        <th>Task Name</th>
+        <th>Leader</th>
+        <th>Details</th>
+        @{
+            if (roleId == 1)
+            {
+                <th>Delete Team</th>
+            }
+        }
+
+    </tr>
+
+    @foreach (Team i in Model)
+    {
+        <tr id="@i.TeamId">
+            <td>@i.CreationDate.Value.ToShortDateString()</td>
+            <td>@i.TeamName</td>
+            <td>@i.Employee.FirstName  @i.Employee.LastName</td>
+            <td>@Html.ActionLink("Explore Team >", "GetTeamDetails", "Teams", new { id = i.TeamId }, null)</td>
+            @{
+                if (roleId == 1)
+                {
+                    <td>
+                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#myModal" onclick="openModal(@i.TeamId)">
+                            Delete
+                        </button>
+                    </td>
+                }
+            }
+
+        </tr>
+    }
+</table>
+<div class="modal" id="myModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+
+            <div class="modal-body" style="height:200px;width:500px">
+                <p class="h3 p-3">Are You Sure ?</p>
+                <p>
+                    <button class="btn btn-success" id="yesDelete">Yes</button>
+                    <button class="btn btn-info" data-bs-dismiss="modal" id="noDelete">No</button>
+                </p>
+
+            </div>
+
+        </div>
+    </div>
+</div>
