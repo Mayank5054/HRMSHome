@@ -45,6 +45,7 @@
                             <li>@Html.ActionLink("All Employees", "AllEmployees", "Director", new { area = "" }, new { @class = "nav-link" })</li>
                             <li>@Html.ActionLink("Add A New Team", "CreateTeam", "Teams", new { area = "" }, new { @class = "nav-link" })</li>
                             <li>@Html.ActionLink("All Teams", "GetMyTeams", "Teams", new { area = "" }, new { @class = "nav-link" })</li>
+                            <li>@Html.ActionLink("Fired", "FiredEmployees", "Director", new { area = "" }, new { @class = "nav-link" })</li>
                         }
                     }
                     @{
@@ -66,10 +67,8 @@
 
                     @if (Session["Role"] != null)
                     {
-
                         <li>@Html.ActionLink("Profile", "GetProfile", "Director", new { area = "" }, new { @class = "nav-link" })</li>
                         <li>@Html.ActionLink("Logout", "Logout", "Authentication", new { area = "" }, new { @class = "nav-link" })</li>
-                       
                     }
                 </ul>
             </div>

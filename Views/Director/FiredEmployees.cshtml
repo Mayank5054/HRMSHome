@@ -1,0 +1,89 @@
+﻿@using HRMS.Models
+@model List<Employee>
+@{
+    int roleId = int.Parse(Session["RoleId"].ToString());
+}
+<script>
+    function openModel(id) {
+        $("#yesHire").attr("onclick",`HireAgain(${id})`)
+    }
+    function HireAgain(id) {
+        $.ajax({
+            method: "GET",
+            url:"/Director/HireAgain/"+id,
+            success: function (data) {
+                if (data.status == "Success") {
+                    $.notify(data.message, "success");
+                    $(`#${id}`).remove();
+                    
+                }
+                else {
+                    $.notify(data.message, "error");
+                }
+                $("#noHire").click();
+            },
+            error: function (data) {
+                $.notify("Something Went Wrong", "error");
+                $("#noHire").click();
+            }
+        });
+    }
+</script>
+<table class="table table-hover">
+    <tr>
+        <th>Emloyee Name</th>
+        <th>Designation</th>
+        <th> Team Name</th>
+        <th>Assigned Role</th>
+        <th>Team Leader Name</th>
+        <th>ReHire</th>
+    </tr>
+
+    @foreach (Employee i in Model)
+    {
+        <tr id="@i.EmployeeId">
+            <td>@i.FirstName @i.LastName</td>
+            <td>@i.Role.Name</td>
+            <td>
+                @i.TeamsDetails.First().Team.TeamName
+            </td>
+            <td>
+                @i.TeamsDetails.First().AssignedRole
+            <td>
+                @i.TeamsDetails.First().Team.Employee.FirstName @i.TeamsDetails.First().Team.Employee.LastName
+            </td>
+            <td>
+                <button class="btn btn-info" onclick="openModel(@i.EmployeeId)" data-bs-toggle="modal" data-bs-target="#myModal">Hire</button>
+            </td>
+            @*<td>
+                    @i.TeamsDetails.First().Team.TeamLeader.Employee
+                </td>*@
+            @*<td>@i.Teams.First().Employee.FirstName @i.Teams.First().Employee.FirstName</td>
+                @{
+                    if (roleId == 2)
+                    {
+                        <td>@Html.ActionLink("Hire Again ", "H", "Teams", new { id = i.EmployeeId }, null)</td>
+                    }
+                }*@
+
+        </tr>
+    }
+</table>
+
+<div class="modal" id="myModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+
+            <div class="modal-body" style="height:200px;width:500px">
+                <p class="h3 p-3">Are You Sure ?</p>
+                <p>
+                    <button class="btn btn-success" id="yesHire">Yes</button>
+                    <button class="btn btn-info" data-bs-dismiss="modal" id="noHire">No</button>
+                </p>
+
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -441,6 +441,28 @@ namespace HRMS.Controllers
             
         }
 
+        public ActionResult FiredEmployees()
+        {
+            List<Employee> firedEmp = _db.Employees.Include("TeamsDetails")
+                //.Include("TeamsDetails.Team.TeamLeader.Employee")
+               .Where(x => x.isDeleted == true).ToList();
+            return View(firedEmp);
+        }
+
+        public ActionResult HireAgain(int id)
+        {
+            Employee employee = _db.Employees.Find(id);
+            if (employee != null && employee.isDeleted == true)
+            {
+                employee.isDeleted = false;
+                _db.SaveChanges();
+                return Json(new { status = "Success", message = "Employee Has Been ReHired" },JsonRequestBehavior.AllowGet);
+            }
+            else {
+                return Json(new { status = "Failure", message = "Employee Not found or Already Hired" },JsonRequestBehavior.AllowGet);
+            }
+           
+        }
         public ActionResult GetReportingPersons(int id)
         {
             int userId = int.Parse(Session["userId"].ToString());

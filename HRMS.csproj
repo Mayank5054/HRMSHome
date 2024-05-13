@@ -264,6 +264,7 @@
     <Content Include="Views\Teams\GetMyTeams.cshtml" />
     <Content Include="Views\Teams\GetTeamDetails.cshtml" />
     <Content Include="Views\Teams\EditAssignedRole.cshtml" />
+    <Content Include="Views\Director\FiredEmployees.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

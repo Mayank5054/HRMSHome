@@ -28,7 +28,7 @@ namespace HRMS.Models
             public string LastName { get; set; }
             [Required(ErrorMessage ="Birth Date Is Required")]
             public Nullable<System.DateTime> BirthDate { get; set; }
-            [Required(ErrorMessage = "Gende Must Be Selected")]
+            [Required(ErrorMessage = "Gender Must Be Selected")]
             public string Gender { get; set; }
             [Required(ErrorMessage = "Designation Must  Be Selected")]
             public Nullable<int> DepartmentId { get; set; }

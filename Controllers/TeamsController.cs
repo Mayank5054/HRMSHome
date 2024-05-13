@@ -90,7 +90,7 @@ namespace HRMS.Controllers
             List<Team> teams;
             if (roleId == 1)
             {
-                teams = _db.Teams.ToList();
+                teams = _db.Teams.Include("Employee").ToList();
             }
             else if(roleId == 2)
             {
