@@ -45,7 +45,211 @@
 <p>
     <h3> Your Tasks</h3>
 </p>
+<button class="btn btn-info mb-3" data-bs-toggle="modal" data-bs-target="#mymodal" id="addTask">Add Task</button>
 
+<table class="table table-hover" id="TasksDataTable">
+    <thead>
+        <tr>
+            <th>Task Date</th>
+            <th>Task Name</th>
+            <th>Task Description</th>
+            <th>Approver</th>
+            <th>Approved By</th>
+            <th>Approved On</th>
+            <th>Status</th>
+            <th>Modified On</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Task i in Model)
+        {
+            <tr id="@i.TaskId">
+                <td>@i.TaskDate.Value.ToShortDateString()</td>
+                <td>@i.TaskName</td>
+                <td>@i.TaskDescription</td>
+                <td>@i.Employee1.FirstName  @i.Employee1.LastName</td>
+                @if (i.Employee != null)
+                {
+                    <td>@i.Employee.FirstName @i.Employee.LastName</td>
+                }
+                else
+                {
+                    <td></td>
+                }
+                @if (i.ApprovedORRejectedOn != null)
+                {
+                    <td>@i.ApprovedORRejectedOn.Value.ToShortDateString()</td>
+                }
+                else
+                {
+                    <td></td>
+                }
+
+                <td>
+                    <span class='
+                   label
+                  @{
+                      if (i.Status == "Approved")
+                      {
+                      @:label-success
+                  }
+                      else if (i.Status == "Pending") {
+                          @:label-warning
+                    }
+                      else
+                      {
+                @:label-danger
+            }
+                      }
+
+                  '>@i.Status</span>
+            </td>
+            @if (i.ModifiedOn != null)
+            {
+                <td>@i.ModifiedOn.Value.ToShortDateString()</td>
+            }
+            else
+            {
+                <td></td>
+            }
+
+            <td>
+                @Html.ActionLink("Edit", "EditTask", "Director",
+                   new { id = @i.TaskId }, new { @class = "btn btn-primary" })
+            </td>
+            <td>
+                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#myModal" onclick="openModal(@i.TaskId)">
+                    Delete
+                </button>
+                @*@Html.ActionLink("Delete", "DeleteTask", "Director",
+                new { id = @i.TaskId }, new { @class = "btn btn-danger" })*@
+            </td>
+
+        </tr>
+
+    }
+    </tbody>
+
+
+    
+</table>
+
+<div class="modal" id="myModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" >
+
+
+            <div class="modal-body" id="modal-body" style="min-height:200px;width:500px">
+                <p class="h3 p-3">Are You Sure ?</p>
+                <p>
+                    <button class="btn btn-success" id="yesDelete">Yes</button>
+                    <button class="btn btn-info" data-bs-dismiss="modal" id="noDelete">No</button>
+                </p>
+
+            </div>
+            <div class="modal-footer">
+                <button data-bs-dismiss="modal" id="modalClose">Cancel</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="~/Content/assets/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+<!-- FastClick -->
+<script src="~/Content/assets/plugins/fastclick/fastclick.js"></script>
+<!-- AdminLTE App -->
+<script src="~/Content/assets/dist/js/app.min.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="~/Content/assets/dist/js/demo.js"></script>
+<script>
+    $("#addTask").click(function () {
+        $.ajax({
+            method: "GET",
+            url: "/Partial/AddTaskForm",
+            success: function (data) {
+                $("#modal-body").html(data);
+                $.validator.unobtrusive.parse($("#AddTasKForm"));
+                $("#myModal").modal("show");
+                console.log(data);
+            },
+            error: function (data) {
+                $.notify("comething went wrong", "error");
+            }
+        })
+    })
+
+    $(document).on("submit", "#AddTasKForm", function (e) {
+        e.preventDefault();
+        let data = new FormData($(this)[0]);
+
+
+        if ($(this).valid()) {
+            $.ajax({
+                method: "POST",
+                url: "/AJAX/AddTask",
+                data: data,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    const dataToPrint = JSON.parse(data.data);
+                    if (data.status == "Success") {
+                          $("#TasksDataTable").DataTable().row.add(
+      {
+                                  TaskDate: dataToPrint.TaskDate,
+                                  TaskName: dataToPrint.TaskName,
+                                  Description: dataToPrint.TaskDescription,
+                                  Approver: dataToPrint.ApproverFirstName + dataToPrint.ApproverLastName,
+                                  ApprovedBy: dataToPrint.ApprovedByFirstName + dataToPrint.ApprovedByLastName,
+                                  Status: dataToPrint.Status,
+                                  ModifiedOn: dataToPrint.ModifiedOn,
+          Edit: null,
+          Delete: null,
+                                  ApprovedOn: dataToPrint.ApprovedDate
+      }
+  ).draw()
+                        $.notify(data.message, "success");
+                    }
+                    else {
+                        $.notify(data.message, "error");
+                    }
+                    
+                    $("#modalClose").click();
+                },
+                error: function (data) {
+                    console.log(data);
+                    $("#modalClose").click();
+                }
+            })
+        } else {
+            $.notify("Form Validation Failed", "error");
+        }
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+      
+        $("#TasksDataTable").DataTable({
+            columns: [
+                {
+                    data:"TaskDate"
+                },
+                { data: "TaskName" },
+                { data: "Description" },
+                { data: "Approver" },
+                { data: "ApprovedBy" },
+                { data: "ApprovedOn" },
+                { data: "Status" },
+                { data: 'ModifiedOn' },
+                { data: 'Edit' },
+                {data:"Delete"}
+            ],
+        });
+    })
+</script>
 <script>
     console.log("Hello world");
     function openModal(id) {
@@ -60,6 +264,8 @@
                 console.log($(this))
                 console.log(data);
                 if (data.Status = "success") {
+                 
+                    
                     $(`#${id}`).remove();
                     $("#noDelete").click();
                     $.notify("Task Deleted", "success");
@@ -72,112 +278,3 @@
         })
     }
 </script>
-<table class="table table-hover">
-    <tr>
-        <th>Task Date</th>
-        <th>Task Name</th>
-        <th>Task Description</th>
-        <th>Approver</th>
-        <th>Approved By</th>
-        <th>ApprovedOr On</th>
-        <th>Status</th>
-        <th>Modified On</th>
-        <th>Edit</th>
-        <th>Delete</th>
-    </tr>
-
-    @foreach (Task i in Model)
-    {
-        <tr id="@i.TaskId">
-            <td>@i.TaskDate.Value.ToShortDateString()</td>
-            <td>@i.TaskName</td>
-            <td>@i.TaskDescription</td>
-            <td>@i.Employee1.FirstName  @i.Employee1.LastName</td>
-            @if (i.Employee != null)
-            {
-                <td>@i.Employee.FirstName @i.Employee.LastName</td>
-            }
-            else
-            {
-                <td></td>
-            }
-            @if (i.ApprovedORRejectedOn != null)
-            {
-                <td>@i.ApprovedORRejectedOn.Value.ToShortDateString()</td>
-            }
-            else
-            {
-                <td></td>
-            }
-
-            <td>
-                <span class='
-                       label
-                      @{
-                          if (i.Status == "Approved")
-                          {
-                          @:label-success
-                      }
-                          else if (i.Status == "Pending") {
-                              @:label-warning
-                        }
-                          else
-                          {
-                    @:label-danger
-                }
-                          }
-
-                      '
-                      >@i.Status</span>
-                </td>
-                @if (i.ModifiedOn != null)
-                {
-                    <td>@i.ModifiedOn.Value.ToShortDateString()</td>
-                }
-                else
-                {
-                    <td></td>
-                }
-
-                <td>
-                    @Html.ActionLink("Edit", "EditTask", "Director",
-                       new { id = @i.TaskId }, new { @class = "btn btn-primary" })
-                </td>
-                <td>
-                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#myModal" onclick="openModal(@i.TaskId)">
-                        Delete
-                    </button>
-                    @*@Html.ActionLink("Delete", "DeleteTask", "Director",
-                        new { id = @i.TaskId }, new { @class = "btn btn-danger" })*@
-                </td>
-
-            </tr>
-
-        }
-</table>
-
-<div class="modal" id="myModal">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-
-
-            <div class="modal-body" style="height:200px;width:500px">
-                <p class="h3 p-3">Are You Sure ?</p>
-                <p>
-                    <button class="btn btn-success" id="yesDelete">Yes</button>
-                    <button class="btn btn-info" data-bs-dismiss="modal" id="noDelete">No</button>
-                </p>
-
-            </div>
-
-        </div>
-    </div>
-</div>
-
-        <script src="~/Content/assets/plugins/slimScroll/jquery.slimscroll.min.js"></script>
-<!-- FastClick -->
-<script src="~/Content/assets/plugins/fastclick/fastclick.js"></script>
-<!-- AdminLTE App -->
-<script src="~/Content/assets/dist/js/app.min.js"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="~/Content/assets/dist/js/demo.js"></script>
