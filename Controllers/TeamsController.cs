@@ -108,10 +108,12 @@ namespace HRMS.Controllers
 
         [@Authorize(new string[] { "Director", "Manager","Employee" })]
         public ActionResult GetTeamDetails(int id)
-        {
-            
+        { 
             Team _teamDetail = _db.Teams.
                Include("TeamsDetails").Where(x => x.TeamId==id).FirstOrDefault();
+
+            //List<TeamsDetail> _teamToPass = _teamDetail.TeamsDetails.Where(x=>x.Employee.isDeleted == false).ToList();
+            //_teamDetail.TeamsDetails = _teamToPass;
 
             return View(_teamDetail);
         }

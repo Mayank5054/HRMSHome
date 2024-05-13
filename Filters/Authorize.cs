@@ -10,7 +10,7 @@ namespace HRMS.Filters
   
     public class Authorize : FilterAttribute, IAuthorizationFilter
     {
-         string[] _roles;
+        string[] _roles;
         public Authorize(string[] roles)
         {
             _roles = roles; 

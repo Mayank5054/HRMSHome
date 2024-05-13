@@ -19,7 +19,15 @@
 
     @foreach (TeamsDetail i in Model.TeamsDetails)
     {
-        <tr id="@i.TeamId">
+        <tr id="@i.TeamId" 
+            class="
+            @{ 
+                if(i.Employee.isDeleted == true)
+                {
+                    @:bg-danger
+                }
+            }"
+            >
             <td>@i.Employee.FirstName @i.Employee.LastName</td>
             <td>@i.AssignedRole</td>
             @{

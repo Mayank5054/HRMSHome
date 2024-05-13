@@ -16,7 +16,6 @@ namespace HRMS.Filters
                 filterContext.Result = new RedirectResult("~/Authentication/Login");
             }
         }
-
         public void OnAuthenticationChallenge(AuthenticationChallengeContext filterContext)
         {
 

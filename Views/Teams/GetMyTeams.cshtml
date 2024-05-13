@@ -67,7 +67,7 @@
         <tr id="@i.TeamId">
             <td>@i.CreationDate.Value.ToShortDateString()</td>
             <td>@i.TeamName</td>
-            <td>@i.Employee.FirstName  @i.Employee.LastName</td>
+            @*<td>@i.Employee.FirstName  @i.Employee.LastName</td>*@
             <td>@Html.ActionLink("Explore Team >", "GetTeamDetails", "Teams", new { id = i.TeamId }, null)</td>
             @{
                 if (roleId == 1)
