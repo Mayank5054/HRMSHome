@@ -106,48 +106,17 @@ namespace HRMS.Controllers
         {
             int userId = int.Parse(Session["userId"].ToString());
             int roleId = int.Parse(Session["RoleId"].ToString());
-            var taskData = _db.Tasks.Include("Employee1")
+            object taskData = new {};
+            if (to == -1)
+            {
+               taskData = _db.Tasks.Include("Employee1")
                        .Include("Employee2")
                        .Include("Employee")
                         .Where(x => x.EmployeeId == userId)
-                       .OrderBy(x=>x.TaskDate)
-                       .Skip(from)
-                       .Take(to)
-                       .Select(x => new
-                         {
-                             ApproverFirstName = x.Employee1.FirstName,
-                             ApproverLastName = x.Employee1.LastName,
-                             ApprovedByFirstName = x.Employee.FirstName,
-                             ApprovedByLastName = x.Employee.LastName,
-                             ApprovedDate = x.ApprovedORRejectedOn,
-                             x.TaskId,
-                             x.TaskDate,
-                             x.TaskName,
-                             x.TaskDescription,
-                             x.Status,
-                             x.ModifiedOn,
-
-                         })
-                       .ToList();
-
-            string jsonData = JsonConvert.SerializeObject(taskData);
-            return Json(new { status = "Success", message = "Task Has Been Sended", data = jsonData },JsonRequestBehavior.AllowGet);
-        
-        }
-        public ActionResult FetchTasksFromTo(int from, int to)
-        {
-            int userId = int.Parse(Session["userId"].ToString());
-            int roleId = int.Parse(Session["RoleId"].ToString());
-            var taskData = _db.Tasks.Include("Employee1")
-                       .Include("Employee2")
-                       .Include("Employee")
-                       .Where(x => x.ApproverID == userId)
                        .OrderBy(x => x.TaskDate)
                        .Skip(from)
-                       .Take(to)
                        .Select(x => new
                        {
-                           EmployeeName = x.Employee2.FirstName + " " + x.Employee2.LastName, 
                            ApproverFirstName = x.Employee1.FirstName,
                            ApproverLastName = x.Employee1.LastName,
                            ApprovedByFirstName = x.Employee.FirstName,
@@ -159,15 +128,165 @@ namespace HRMS.Controllers
                            x.TaskDescription,
                            x.Status,
                            x.ModifiedOn,
-                           ApproverRole = x.Employee.Role.Name,
+
                        })
                        .ToList();
+            }
+            else
+            {
+                 taskData = _db.Tasks.Include("Employee1")
+                    .Include("Employee2")
+                    .Include("Employee")
+                     .Where(x => x.EmployeeId == userId)
+                    .OrderBy(x => x.TaskDate)
+                    .Skip(from)
+                    .Take(to-from)
+                    .Select(x => new
+                    {
+                        ApproverFirstName = x.Employee1.FirstName,
+                        ApproverLastName = x.Employee1.LastName,
+                        ApprovedByFirstName = x.Employee.FirstName,
+                        ApprovedByLastName = x.Employee.LastName,
+                        ApprovedDate = x.ApprovedORRejectedOn,
+                        x.TaskId,
+                        x.TaskDate,
+                        x.TaskName,
+                        x.TaskDescription,
+                        x.Status,
+                        x.ModifiedOn,
+
+                    })
+                    .ToList();
+            }
+         
 
             string jsonData = JsonConvert.SerializeObject(taskData);
-            return Json(new { status = "Success", message = "Task Has Been Sended", data = jsonData }, JsonRequestBehavior.AllowGet);
-
+            return Json(new { status = "Success", message = "Task Has Been Sended", data = jsonData },JsonRequestBehavior.AllowGet);
+        
         }
+        public ActionResult FetchTasksFromTo(int from, int to)
+        {
+            int userId = int.Parse(Session["userId"].ToString());
+            int roleId = int.Parse(Session["RoleId"].ToString());
+            object taskData = new { };
 
+            if (to == -1)
+            {
+                if (roleId != 2)
+                {
+                    taskData = _db.Tasks
+                                .Include("Employee2")
+                                .Include("Employee")
+                               .Where(x => x.Employee2.DepartmentId > roleId)
+                               .OrderBy(x => x.TaskDate)
+                               .Skip(from)
+                               .Select(x => new
+                               {
+                                   EmployeeName = x.Employee2.FirstName + " " + x.Employee2.LastName,
+                                   ApproverFirstName = x.Employee1.FirstName,
+                                   ApproverLastName = x.Employee1.LastName,
+                                   ApprovedByFirstName = x.Employee.FirstName,
+                                   ApprovedByLastName = x.Employee.LastName,
+                                   ApprovedDate = x.ApprovedORRejectedOn,
+                                   x.TaskId,
+                                   x.TaskDate,
+                                   x.TaskName,
+                                   x.TaskDescription,
+                                   x.Status,
+                                   x.ModifiedOn,
+                                   ApproverRole = x.Employee.Role.Name,
+                               }).ToList();
+                }
+                else
+                {
+                    taskData = _db.Tasks.Include("Employee1")
+              .Include("Employee2")
+              .Include("Employee")
+              .Where(x => x.ApproverID == userId)
+              .OrderBy(x => x.TaskDate)
+              .Skip(from)
+              .Select(x => new
+              {
+                  EmployeeName = x.Employee2.FirstName + " " + x.Employee2.LastName,
+                  ApproverFirstName = x.Employee1.FirstName,
+                  ApproverLastName = x.Employee1.LastName,
+                  ApprovedByFirstName = x.Employee.FirstName,
+                  ApprovedByLastName = x.Employee.LastName,
+                  ApprovedDate = x.ApprovedORRejectedOn,
+                  x.TaskId,
+                  x.TaskDate,
+                  x.TaskName,
+                  x.TaskDescription,
+                  x.Status,
+                  x.ModifiedOn,
+                  ApproverRole = x.Employee.Role.Name,
+              })
+              .ToList();
+
+                }
+            }
+            else
+            {
+                if (roleId != 2)
+                {
+                    taskData = _db.Tasks
+                                .Include("Employee2")
+                                .Include("Employee")
+                               .Where(x => x.Employee2.DepartmentId > roleId)
+                               .OrderBy(x => x.TaskDate)
+                               .Skip(from)
+                               .Take(to-from)
+                               .Select(x => new
+                               {
+                                   EmployeeName = x.Employee2.FirstName + " " + x.Employee2.LastName,
+                                   ApproverFirstName = x.Employee1.FirstName,
+                                   ApproverLastName = x.Employee1.LastName,
+                                   ApprovedByFirstName = x.Employee.FirstName,
+                                   ApprovedByLastName = x.Employee.LastName,
+                                   ApprovedDate = x.ApprovedORRejectedOn,
+                                   x.TaskId,
+                                   x.TaskDate,
+                                   x.TaskName,
+                                   x.TaskDescription,
+                                   x.Status,
+                                   x.ModifiedOn,
+                                   ApproverRole = x.Employee.Role.Name,
+                               }).ToList();
+                }
+                else
+                {
+                    taskData = _db.Tasks.Include("Employee1")
+              .Include("Employee2")
+              .Include("Employee")
+              .Where(x => x.ApproverID == userId)
+              .OrderBy(x => x.TaskDate)
+              .Skip(from)
+              .Take(to - from)
+              .Select(x => new
+              {
+                  EmployeeName = x.Employee2.FirstName + " " + x.Employee2.LastName,
+                  ApproverFirstName = x.Employee1.FirstName,
+                  ApproverLastName = x.Employee1.LastName,
+                  ApprovedByFirstName = x.Employee.FirstName,
+                  ApprovedByLastName = x.Employee.LastName,
+                  ApprovedDate = x.ApprovedORRejectedOn,
+                  x.TaskId,
+                  x.TaskDate,
+                  x.TaskName,
+                  x.TaskDescription,
+                  x.Status,
+                  x.ModifiedOn,
+                  ApproverRole = x.Employee.Role.Name,
+              })
+              .ToList();
+
+                }
+                
+
+            }
+            string jsonData = JsonConvert.SerializeObject(taskData);
+            return Json(new { status = "Success", message = "Task Has Been Sended", data = jsonData }, JsonRequestBehavior.AllowGet);
+        }
         public ActionResult ApproveTask(int id, string status)
         {
             Task _task = _db.Tasks.Find(id);

@@ -211,7 +211,7 @@ onclick="ApproveOrRejectTask(${id},'Rejected')">
         dataTable.on('length.dt', function (e, settings, len) {
             var from = $("#TaskApproveDataTable").DataTable().rows().count();
             console.log("from" + from);
-            if (len > from) {
+            if (len==-1 || len > from) {
                 $.ajax({
                     method: "GET",
                     url: "/AJAX/FetchTasksFromTo?from=" + from + "&to=" + len,
