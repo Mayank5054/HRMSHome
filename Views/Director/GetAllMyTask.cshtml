@@ -50,6 +50,7 @@
 <table class="table table-hover" id="TasksDataTable">
     <thead>
         <tr>
+            <th style="display:none">Task Id</th>
             <th>Task Date</th>
             <th>Task Name</th>
             <th>Task Description</th>
@@ -58,14 +59,14 @@
             <th>Approved On</th>
             <th>Status</th>
             <th>Modified On</th>
-            <th>Edit</th>
-            <th>Delete</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
         @foreach (Task i in Model)
         {
             <tr id="@i.TaskId">
+                <td>@i.TaskId</td>
                 <td>@i.TaskDate.Value.ToShortDateString()</td>
                 <td>@i.TaskName</td>
                 <td>@i.TaskDescription</td>
@@ -87,25 +88,7 @@
                     <td></td>
                 }
 
-                <td>
-                    <span class='
-                   label
-                  @{
-                      if (i.Status == "Approved")
-                      {
-                      @:label-success
-                  }
-                      else if (i.Status == "Pending") {
-                          @:label-warning
-                    }
-                      else
-                      {
-                @:label-danger
-            }
-                      }
-
-                  '>@i.Status</span>
-            </td>
+                <td>@i.Status</td>
             @if (i.ModifiedOn != null)
             {
                 <td>@i.ModifiedOn.Value.ToShortDateString()</td>
@@ -118,8 +101,7 @@
             <td>
                 @Html.ActionLink("Edit", "EditTask", "Director",
                    new { id = @i.TaskId }, new { @class = "btn btn-primary" })
-            </td>
-            <td>
+       
                 <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#myModal" onclick="openModal(@i.TaskId)">
                     Delete
                 </button>
@@ -180,7 +162,21 @@
             }
         })
     })
+    function getFormattedDate(data) {
+        var inputDate = data;
 
+        var date = new Date(inputDate);
+
+
+        var day = date.getDate();
+        var month = date.getMonth() + 1; // January is 0, so we add 1
+        var year = date.getFullYear();
+
+        
+        var formattedDate = (day < 10 ? '0' : '') + day + '/' + (month < 10 ? '0' : '') + month + '/' + year;
+
+        return formattedDate;
+    }
     $(document).on("submit", "#AddTasKForm", function (e) {
         e.preventDefault();
         let data = new FormData($(this)[0]);
@@ -195,27 +191,31 @@
                 contentType: false,
                 success: function (data) {
                     const dataToPrint = JSON.parse(data.data);
+                  
+
                     if (data.status == "Success") {
-                          $("#TasksDataTable").DataTable().row.add(
-      {
-                                  TaskDate: dataToPrint.TaskDate,
-                                  TaskName: dataToPrint.TaskName,
-                                  Description: dataToPrint.TaskDescription,
-                                  Approver: dataToPrint.ApproverFirstName + dataToPrint.ApproverLastName,
-                                  ApprovedBy: dataToPrint.ApprovedByFirstName + dataToPrint.ApprovedByLastName,
-                                  Status: dataToPrint.Status,
-                                  ModifiedOn: dataToPrint.ModifiedOn,
-          Edit: null,
-          Delete: null,
-                                  ApprovedOn: dataToPrint.ApprovedDate
-      }
-  ).draw()
+                
+                        var row = $("#TasksDataTable").DataTable().row.add(
+                            {
+                                TaskId: dataToPrint.TaskId,
+                                TaskDate: getFormattedDate(dataToPrint.TaskDate),
+                                TaskName: dataToPrint.TaskName,
+                                Description: dataToPrint.TaskDescription,
+                                Approver: dataToPrint.ApproverFirstName + " " + dataToPrint.ApproverLastName,
+                                ApprovedBy: (dataToPrint.ApprovedByFirstName == null ? '' : dataToPrint.ApprovedByFirstName) + " " + (dataToPrint.ApprovedByLastName == null ? '' : dataToPrint.ApprovedByLastName),
+                                Status: dataToPrint.Status,
+                                ModifiedOn: getFormattedDate(dataToPrint.ModifiedOn),
+                                ApprovedOn: dataToPrint.ApprovedDate,
+                                Actions: null
+                            }
+                        ).draw();
+                      /*  $(row.node()).attr("data-id", dataToPrint.TaskId);*/
                         $.notify(data.message, "success");
                     }
                     else {
                         $.notify(data.message, "error");
                     }
-                    
+                    console.log(data);
                     $("#modalClose").click();
                 },
                 error: function (data) {
@@ -231,9 +231,10 @@
 
 <script>
     $(document).ready(function () {
-      
+
         $("#TasksDataTable").DataTable({
             columns: [
+                { data: "TaskId", visible: false },
                 {
                     data:"TaskDate"
                 },
@@ -244,15 +245,53 @@
                 { data: "ApprovedOn" },
                 { data: "Status" },
                 { data: 'ModifiedOn' },
-                { data: 'Edit' },
-                {data:"Delete"}
+                { data: 'Actions' },
+
             ],
+            createdRow: function (row, data, dataIndex) {
+
+                const id = data.TaskId;
+            
+                let buttons = `<button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#myModal" onclick="loadDataToModal(${id})">
+                        Edit
+                    </button>
+                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#myModal" onclick="openModal(${id})">
+                        Delete
+                    </button>`;
+                console.log(data);
+                var labelColorClass = "";
+                //// Append the buttons to the last column in the row
+                if (data.Status == "Approved") {
+                    labelColorClass = "label-success";
+                }
+                else if (data.Status == "Rejected") {
+                    labelColorClass = "label-danger";
+                }
+                else {
+                    labelColorClass = "label-warning";
+                }
+                const spanToAppend = `<span class='label ${labelColorClass}'>${data.Status}</span>`
+                $(row).attr("id", id);
+                //console.log(spanToAppend);
+                //console.log($(row).find("td:eq(6)"));
+
+                $(row).find("td:eq(6)").html(spanToAppend);
+
+                $(row).find('td:last').html(buttons);
+
+            }
         });
     })
 </script>
 <script>
     console.log("Hello world");
     function openModal(id) {
+        $("#modal-body").html(`  <p class="h3 p-3">Are You Sure ?</p>
+  <p>
+      <button class="btn btn-success" id="yesDelete">Yes</button>
+      <button class="btn btn-info" data-bs-dismiss="modal" id="noDelete">No</button>
+  </p>`);
+
         $("#yesDelete").attr("onclick", `deleteProduct(${id})`)
     }
     function deleteProduct(id) {
@@ -261,11 +300,10 @@
             method: "GET",
             url: "/Director/DeleteTask/" + id,
             success: function (data) {
-                console.log($(this))
-                console.log(data);
+                //console.log($(this))
+                //console.log(data);
                 if (data.Status = "success") {
-                 
-                    
+                    $("#TasksDataTable").DataTable().rows("#"+id).remove().draw();
                     $(`#${id}`).remove();
                     $("#noDelete").click();
                     $.notify("Task Deleted", "success");
@@ -276,5 +314,10 @@
                 console.log("Error Occured");
             }
         })
+    }
+
+    function loadDataToModal(id) {
+        console.log(id);
+
     }
 </script>
