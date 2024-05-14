@@ -206,6 +206,7 @@ namespace HRMS.Controllers
                             .Include("Employee2")
                             .Include("Employee")
                            .Where(x => x.Employee2.DepartmentId > roleId)
+                           .Take(5)
                            .ToList();
                 return View(_taskData);
             }
@@ -214,6 +215,7 @@ namespace HRMS.Controllers
                 int userId = int.Parse(Session["userId"].ToString());
                 List<HRMS.Models.Task> _taskData = _db.Tasks
                           .Where(x => x.ApproverID == userId)
+                          .Take(2)
                           .ToList();
                 return View(_taskData);
             }
@@ -299,7 +301,7 @@ namespace HRMS.Controllers
         public  ActionResult GetAllMyTask()
         {
             int userId = int.Parse(Session["userId"].ToString());
-            List<Task> _taskData = _db.Tasks.Include("Employee").Where(x=>x.EmployeeId == userId).ToList();
+            List<Task> _taskData = _db.Tasks.Include("Employee").Where(x=>x.EmployeeId == userId).Take(5).ToList();
             return View(_taskData);
         }
 

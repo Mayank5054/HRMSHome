@@ -269,7 +269,7 @@
     <Content Include="Views\Teams\GetTeamDetails.cshtml" />
     <Content Include="Views\Teams\EditAssignedRole.cshtml" />
     <Content Include="Views\Director\FiredEmployees.cshtml" />
-    <Content Include="Views\Partial\_AddTaskForm.cshtml" />
+    <Content Include="Views\Partial\_TaskForm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

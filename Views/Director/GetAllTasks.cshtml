@@ -36,9 +36,10 @@
     <h3>Approve Or Reject Tasks</h3>
 </p>
 
-<table class="table table-bordered " >
+<table class="table table-bordered " id="TaskApproveDataTable">
     <thead>
         <tr>
+            <th>Task Id</th>
             <th>Employee Name</th>
             <th>Task Date</th>
             <th>Task Name</th>
@@ -54,13 +55,15 @@
             <th>
                 reject
             </th>
+            <th>ApproverrId</th>
         </tr>
     </thead>
-   
+
     <tbody>
         @foreach (Task i in Model)
         {
             <tr id="@i.TaskId">
+                <th>@i.TaskId</th>
                 <td>@i.Employee2.FirstName @i.Employee2.LastName</td>
                 <td>@i.TaskDate.Value.ToShortDateString()</td>
                 <td>@i.TaskName</td>
@@ -83,66 +86,229 @@
                 {
                     <td></td>
                 }
-                <td>
-                    <span class='
-       label
-      @{
-          if (i.Status == "Approved")
-          {
-          @:label-success
-      }
-          else if (i.Status == "Pending") {
-              @:label-warning
+                <td>@i.Status</td>
+                @if (i.ModifiedOn != null)
+                {
+                    <td>@i.ModifiedOn.Value.ToShortDateString()</td>
+                }
+                else
+                {
+                    <td></td>
+                }
+
+                <td></td>
+                <td></td>
+                <td>@i.Employee.DepartmentId</td>
+                @*@{
+                        int userId = int.Parse(Session["userId"].ToString());
+                        int roleId = int.Parse(Session["RoleId"].ToString());
+                        if (roleId != 1 && i.Employee.DepartmentId == 1)
+                        {
+                            <td>
+                                @Html.ActionLink("Approve", "ApproveTask", "Director",
+                                   new { id = @i.TaskId, status = "Approved" }, new { @class = "btn btn-outline-info", @disabled = "disabled" })
+                            </td>
+                            <td>
+                                @Html.ActionLink("Reject", "ApproveTask", "Director",
+                                   new { id = @i.TaskId, status = "Rejected" }, new { @class = "btn btn-outline-danger", @disabled = "disabled" })
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                @Html.ActionLink("Approve", "ApproveTask", "Director",
+                                   new { id = @i.TaskId, status = "Approved" }, new { @class = "btn btn-outline-info" })
+                            </td>
+                            <td>
+                                @Html.ActionLink("Reject", "ApproveTask", "Director",
+                                   new { id = @i.TaskId, status = "Rejected" }, new { @class = "btn btn-outline-danger" })
+                            </td>
+                        }
+                    }*@
+
+
+            </tr>
+
         }
-          else
-          {
-    @:label-danger
-}
-          }
-
-      '>@i.Status</span>
-
-    </td>
-    @if (i.ModifiedOn != null)
-    {
-        <td>@i.ModifiedOn.Value.ToShortDateString()</td>
-    }
-    else
-    {
-        <td></td>
-    }
-    @{
-        int userId = int.Parse(Session["userId"].ToString());
-        int roleId = int.Parse(Session["RoleId"].ToString());
-        if (roleId != 1 && i.Employee.DepartmentId == 1)
-        {
-            <td>
-                @Html.ActionLink("Approve", "ApproveTask", "Director",
-                   new { id = @i.TaskId, status = "Approved" }, new { @class = "btn btn-outline-info", @disabled = "disabled" })
-            </td>
-            <td>
-                @Html.ActionLink("Reject", "ApproveTask", "Director",
-                   new { id = @i.TaskId, status = "Rejected" }, new { @class = "btn btn-outline-danger", @disabled = "disabled" })
-            </td>
-        }
-        else
-        {
-            <td>
-                @Html.ActionLink("Approve", "ApproveTask", "Director",
-                   new { id = @i.TaskId, status = "Approved" }, new { @class = "btn btn-outline-info" })
-            </td>
-            <td>
-                @Html.ActionLink("Reject", "ApproveTask", "Director",
-                   new { id = @i.TaskId, status = "Rejected" }, new { @class = "btn btn-outline-danger" })
-            </td>
-        }
-    }
-
-
-    </tr>
-
-}
     </tbody>
 
 </table>
+
+<script>
+    $(document).ready(function () {
+        var dataTable = $("#TaskApproveDataTable").DataTable({
+            lengthMenu: [
+                [5, 10, 15, 20, -1],
+                [5, 10, 15, 20, 'All']
+            ],
+            columns: [
+                { data: "TaskId", visible: false },
+                {
+                    data: "EmployeeName"
+                },
+                { data: "TaskDate" },
+                { data: "TaskName" },
+                { data: "Description" },
+                { data: "Approver" },
+                { data: "ApprovedBy" },
+                { data: "ApprovedOn" },
+                { data: "Status" },
+                { data: 'ModifiedOn' },
+                { data: 'Approve' },
+                { data: 'Reject' },
+                { data: "Approver1Id", visible: false }
+            ],
+            createdRow: function (row, data, dataIndex) {
+                console.log(data);
+                console.log(data);
+                id = data.TaskId;
+                let approveButton;
+                let rejectButton;
+                if (data.Approver1Id == 1) {
+                    approveButton = `<button class="btn-info text-info" style="background:none;border:none"
+           onclick="ApproveOrRejectTask(${id},'Approved')" disabled>
+     Approve
+ </button>`
+
+                    rejectButton = `
+<button class="btn-danger text-danger " style="background:none;border:none"
+
+onclick="ApproveOrRejectTask(${id},'Rejected')" disabled>
+     Rejected
+ </button>`;
+                }
+                else {
+                    approveButton = `<button class="btn-info text-info" style="background:none;border:none"
+           onclick="ApproveOrRejectTask(${id},'Approved')">
+     Approve
+ </button>`
+
+                    rejectButton = `
+<button class="btn-danger text-danger " style="background:none;border:none"
+
+onclick="ApproveOrRejectTask(${id},'Rejected')">
+     Rejected
+ </button>`;
+                }
+
+                if (data.Status == "Approved") {
+                    labelColorClass = "label-success";
+                }
+                else if (data.Status == "Rejected") {
+                    labelColorClass = "label-danger";
+                }
+                else {
+                    labelColorClass = "label-warning";
+                }
+                const spanToAppend = `<span class='label ${labelColorClass}'>${data.Status}</span>`
+                $(row).attr("id", id);
+                $(row).find("td:eq(7)").html(spanToAppend);
+                $(row).find("td:eq(9)").html(approveButton);
+                $(row).find("td:eq(10)").html(rejectButton);
+            }
+        })
+
+        dataTable.on('length.dt', function (e, settings, len) {
+            var from = $("#TaskApproveDataTable").DataTable().rows().count();
+            console.log("from" + from);
+            if (len > from) {
+                $.ajax({
+                    method: "GET",
+                    url: "/AJAX/FetchTasksFromTo?from=" + from + "&to=" + len,
+                    success: function (data) {
+                        const dataToPrint = JSON.parse(data.data);
+                        console.log(dataToPrint);
+
+                        if (data.status == "Success") {
+                            dataToPrint.forEach(item => {
+                                var row = $("#TaskApproveDataTable").DataTable().row.add(
+                                    {
+                                        TaskId: item.TaskId,
+                                        EmployeeName: item.EmployeeName,
+                                        TaskDate: getFormattedDate(item.TaskDate),
+                                        TaskName: item.TaskName,
+                                        Description: item.TaskDescription,
+                                        Approver: item.ApproverFirstName + " " + item.ApproverLastName,
+                                        ApprovedBy: (item.ApprovedByFirstName == null ? '' : item.ApprovedByFirstName) + " " + (item.ApprovedByLastName == null ? '' : item.ApprovedByLastName),
+                                        Status: item.Status,
+                                        ModifiedOn: getFormattedDate(item.ModifiedOn),
+                                        ApprovedOn: getFormattedDate(item.ApprovedDate),
+                                        Approve: null,
+                                        Reject: null,
+                                        Approver1Id: item.ApproverRole
+                                    }
+                                ).draw();
+
+                                /*  $(row.node()).attr("data-id", dataToPrint.TaskId);*/
+
+                            })
+                            $.notify(data.message, "success");
+                        }
+                        else {
+                            $.notify("Something Went Wrong", "error");
+                        }
+                        console.log(data);
+
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                })
+            }
+            console.log(len);
+        })
+    })
+
+    function getFormattedDate(data) {
+        var inputDate = new Date().toISOString();
+
+        var date = new Date(inputDate);
+
+
+        var day = date.getDate();
+        var month = date.getMonth() + 1; // January is 0, so we add 1
+        var year = date.getFullYear();
+
+
+        var formattedDate = (day < 10 ? '0' : '') + day + '/' + (month < 10 ? '0' : '') + month + '/' + year;
+
+        return formattedDate;
+    }
+
+    function ApproveOrRejectTask(id, op) {
+
+        $.ajax({
+            method: "GET",
+            url: "/AJAX/ApproveTask/" + id + "?status=" + op,
+            success: function (data) {
+                let labelColorClass;
+                console.log(data);
+              
+      
+                if (op == "Rejected") {
+                    labelColorClass = "label-danger";
+                }
+                else {
+                    labelColorClass = "label-success";
+                }
+
+                if (data.status == "Success") {
+                    const spanToAppend = `<span class='label ${labelColorClass}'>${op}</span>`;
+                    $("#" + id).find("td:eq(7)").html(spanToAppend);
+                    $("#" + id).find("td:eq(5)").text(data.data1.ApprovedOrRejectedBy);
+                    $("#" + id).find("td:eq(6)").text(getFormattedDate(data.data1.ApprovedORRejectedOn));
+                    $.notify(data.message, "success");
+                }
+                else {
+                    $.notify(data.message, "error");
+                }
+
+            },
+            error: function (err) {
+                $.notify("Something Went Wrong", "error");
+                console.log(err);
+            }
+        })
+    }
+</script>
 

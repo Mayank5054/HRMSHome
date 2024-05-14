@@ -1,32 +1,30 @@
 ﻿
 @using HRMS.Models
 @model Task
+@{
+    string formId = (ViewBag.Operation == "Edit") ? "EditTaskForm" : "AddTaskForm";
+}
 <p>
-    <h3>Add Task</h3>
+    <h3>
+        @(ViewBag.Operation == "Edit" ? "Edit Task" : "Add Task")
+    </h3>
 </p>
+
 @using (Html.BeginForm("", "", FormMethod.Post, new
 {
-    @id = "AddTasKForm"
+@id = formId
 }))
 {
-
-    @*@Html.TextBoxFor(m => m.TaskDate, "{0:yyyy-mm-dd}", new
-            {
-            type = "date",
-            })
-
-        <p>TaskName</p>
-        @Html.TextBoxFor(x => x.TaskName)
-        <p>TaskDescription</p>
-        @Html.TextBoxFor(x => x.TaskDescription)*@
-
-
+    if(ViewBag.Operation == "Edit")
+                {
+                    @Html.HiddenFor(x => x.TaskId);
+                }
     <div class="form-floating mt-3 mb-3 ">
-        @Html.TextBoxFor(x=>x.TaskDate,new
+        @Html.TextBoxFor(x => x.TaskDate, "{0:yyyy-MM-dd}", new
    {
-       type="date",
-       @class="form-control",
-       style="height:50px !important"
+       type = "date",
+       @class = "form-control",
+       style = "height:50px !important"
    })
         @*<input type="date" name="TaskDate" class="form-control" style="height:50px !important" />*@
         <label class="control-label"> Create Date</label>
@@ -34,12 +32,12 @@
         @Html.ValidationMessageFor(model => model.TaskDate, "", new { @class = "text-danger" })
     </div>
     <div class="form-floating mt-3 mb-3">
-        @Html.TextBoxFor(model => model.TaskName, new { id = "Email", @class = "form-control", style = "max-width:100%;height:50px !important", placeholder = "" })
+        @Html.TextBoxFor(model => model.TaskName, new {  @class = "form-control", style = "max-width:100%;height:50px !important", placeholder = "" })
         @Html.LabelFor(model => model.TaskName, htmlAttributes: new { @class = "control-label" })
         @Html.ValidationMessageFor(model => model.TaskName, "", new { @class = "text-danger" })
     </div>
     <div class="form-floating mt-3 mb-3">
-        @Html.TextBoxFor(model => model.TaskDescription, new { id = "Email", @class = "form-control", style = "max-width:100%;height:50px !important", placeholder = "" })
+        @Html.TextBoxFor(model => model.TaskDescription, new {  @class = "form-control", style = "max-width:100%;height:50px !important", placeholder = "" })
         @Html.LabelFor(model => model.TaskDescription, htmlAttributes: new { @class = "control-label" })
         @Html.ValidationMessageFor(model => model.TaskDescription, "", new { @class = "text-danger" })
     </div>

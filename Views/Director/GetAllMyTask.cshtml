@@ -158,7 +158,7 @@
                 console.log(data);
             },
             error: function (data) {
-                $.notify("comething went wrong", "error");
+                $.notify("something went wrong", "error");
             }
         })
     })
@@ -177,7 +177,7 @@
 
         return formattedDate;
     }
-    $(document).on("submit", "#AddTasKForm", function (e) {
+    $(document).on("submit", "#AddTaskForm", function (e) {
         e.preventDefault();
         let data = new FormData($(this)[0]);
 
@@ -232,7 +232,11 @@
 <script>
     $(document).ready(function () {
 
-        $("#TasksDataTable").DataTable({
+      var dataTable =   $("#TasksDataTable").DataTable({
+          lengthMenu: [
+              [5, 10, 15, 20, -1],
+               [5,10,15,20,'All']
+           ],
             columns: [
                 { data: "TaskId", visible: false },
                 {
@@ -248,11 +252,12 @@
                 { data: 'Actions' },
 
             ],
+            
             createdRow: function (row, data, dataIndex) {
 
                 const id = data.TaskId;
             
-                let buttons = `<button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#myModal" onclick="loadDataToModal(${id})">
+                let buttons = `<button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#myModal"  onclick="loadDataToModal(${id})">
                         Edit
                     </button>
                     <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#myModal" onclick="openModal(${id})">
@@ -280,7 +285,55 @@
                 $(row).find('td:last').html(buttons);
 
             }
-        });
+      });
+
+      
+        dataTable.on('length.dt', function (e, settings, len) {
+            var from = $("#TasksDataTable").DataTable().rows().count();
+            console.log("from"+from);
+            if (len > from) {
+                $.ajax({
+                    method: "GET",
+                    url: "/AJAX/FetchFromTo?from=" + from + "&to=" + len,
+                    success: function (data) {
+                        const dataToPrint = JSON.parse(data.data);
+                        console.log(dataToPrint);
+                      
+                        if (data.status == "Success") {
+                        dataToPrint.forEach(item => {
+                            var row = $("#TasksDataTable").DataTable().row.add(
+                                {
+                                    TaskId: item.TaskId,
+                                    TaskDate: getFormattedDate(item.TaskDate),
+                                    TaskName: item.TaskName,
+                                    Description: item.TaskDescription,
+                                    Approver: item.ApproverFirstName + " " + item.ApproverLastName,
+                                    ApprovedBy: (item.ApprovedByFirstName == null ? '' : item.ApprovedByFirstName) + " " + (item.ApprovedByLastName == null ? '' : item.ApprovedByLastName),
+                                    Status: item.Status,
+                                    ModifiedOn: getFormattedDate(item.ModifiedOn),
+                                    ApprovedOn: item.ApprovedDate,
+                                    Actions: null
+                                }
+                            ).draw();
+                            /*  $(row.node()).attr("data-id", dataToPrint.TaskId);*/
+                            
+                        })
+                            $.notify(data.message, "success");
+                        }
+                        else {
+                            $.notify("Something Went Wrong", "error");
+                        }
+                        console.log(data);
+                        
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                })
+            }
+            console.log(len);
+        })
+
     })
 </script>
 <script>
@@ -318,6 +371,90 @@
 
     function loadDataToModal(id) {
         console.log(id);
-
+            $.ajax({
+                method: "GET",
+                url: "/Partial/EditTaskForm/"+id,
+                success: function (data) {
+                    $("#modal-body").html(data);
+                    $.validator.unobtrusive.parse($("#EditTaskForm"));
+                    $("#myModal").modal("show");
+                    console.log(data);
+                },
+                error: function (data) {
+                    $.notify("comething went wrong", "error");
+                }
+            })
     }
+
+    $(document).on("submit", "#EditTaskForm", function (e) {
+        e.preventDefault();
+        var data = new FormData($(this)[0]);
+
+        $.ajax({
+            method: "POST",
+            url: "/AJAX/EditTask/",
+            data: data,
+            processData: false,
+            contentType: false,
+            success: function(data){
+                const dataToPrint = JSON.parse(data.data);
+
+
+                if (data.status == "Success") {
+
+                    var row = $("#TasksDataTable").DataTable().row("#"+dataToPrint.TaskId).data(
+                        {
+                            TaskId: dataToPrint.TaskId,
+                            TaskDate: getFormattedDate(dataToPrint.TaskDate),
+                            TaskName: dataToPrint.TaskName,
+                            Description: dataToPrint.TaskDescription,
+                            Approver: dataToPrint.ApproverFirstName + " " + dataToPrint.ApproverLastName,
+                            ApprovedBy: (dataToPrint.ApprovedByFirstName == null ? '' : dataToPrint.ApprovedByFirstName) + " " + (dataToPrint.ApprovedByLastName == null ? '' : dataToPrint.ApprovedByLastName),
+                            Status: dataToPrint.Status,
+                            ModifiedOn: getFormattedDate(dataToPrint.ModifiedOn),
+                            ApprovedOn: dataToPrint.ApprovedDate,
+                            Actions: null
+                        }
+                    ).draw();
+
+                    let buttons = `<button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#myModal"  onclick="loadDataToModal(${dataToPrint.TaskId})">
+        Edit
+    </button>
+    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#myModal" onclick="openModal(${dataToPrint.TaskId})">
+        Delete
+    </button>`;
+                   
+                    var labelColorClass = "";
+                    //// Append the buttons to the last column in the row
+                    if (data.Status == "Approved") {
+                        labelColorClass = "label-success";
+                    }
+                    else if (data.Status == "Rejected") {
+                        labelColorClass = "label-danger";
+                    }
+                    else {
+                        labelColorClass = "label-warning";
+                    }
+                    const spanToAppend = `<span class='label ${labelColorClass}'>${dataToPrint.Status}</span>`
+        
+                    //console.log(spanToAppend);
+                    //console.log($(row).find("td:eq(6)"));
+
+                    $("#" + dataToPrint.TaskId).find("td:eq(6)").html(spanToAppend);
+
+                    $("#" + dataToPrint.TaskId).find('td:last').html(buttons);
+                    /*  $(row.node()).attr("data-id", dataToPrint.TaskId);*/
+                    $.notify(data.message, "success");
+                }
+                else {
+                    $.notify(data.message, "error");
+                }
+                console.log(data);
+                $("#modalClose").click();
+        },
+            error: function(err){
+                console.log(err);
+            }
+        })
+    })
 </script>

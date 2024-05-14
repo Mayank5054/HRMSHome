@@ -3,15 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-
+using HRMS.Models;
 namespace HRMS.Controllers
 {
     public class PartialController : Controller
     {
+        MayankEntities _db;
+        public PartialController()
+        {
+            _db = new MayankEntities();
+        }
         // GET: Partial
         public ActionResult AddTaskForm()
         {
-            return PartialView("_AddTaskForm");
+            ViewBag.Operation = "Add";
+            return PartialView("_TaskForm");
+        }
+
+        public ActionResult EditTaskForm(int id)
+        {
+            Task _task = _db.Tasks.Find(id);
+            ViewBag.Operation = "Edit";
+            return PartialView("_TaskForm",_task);
         }
     }
 }
