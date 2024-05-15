@@ -258,20 +258,44 @@ onclick="ApproveOrRejectTask(${id},'Rejected')">
             console.log(len);
         })
     })
+    function convertDate(ob) {
+        if (ob == null || ob == "") {
+            var date = null;
+            return date
+        }
+        else {
+            var timestamp = parseInt(ob.replace("/Date(", "").replace(")/", ""));
+            var purchaseDate = new Date(timestamp);
+            var year = purchaseDate.getFullYear();
+            var month = ('0' + (purchaseDate.getMonth() + 1)).slice(-2);
+            var day = ('0' + purchaseDate.getDate()).slice(-2);
+            var formattedDate = year + '-' + month + '-' + day;
+            return formattedDate
+        }
 
+
+    }
     function getFormattedDate(data) {
-        var inputDate = new Date().toISOString();
-
+        console.log(data);
+        if (data == null) {
+            return "";
+        }
+        if (/^\/Date\(\d+\)\/$/.test(data)) {
+            var ob = data;
+            var timestamp = parseInt(ob.replace("/Date(", "").replace(")/", ""));
+            var purchaseDate = new Date(timestamp);
+            var year = purchaseDate.getFullYear();
+            var month = ('0' + (purchaseDate.getMonth() + 1)).slice(-2);
+            var day = ('0' + purchaseDate.getDate()).slice(-2);
+            var formattedDate = day + '/' + month + '/' + year;
+            return formattedDate
+        }
+        var inputDate = data;
         var date = new Date(inputDate);
-
-
         var day = date.getDate();
         var month = date.getMonth() + 1; // January is 0, so we add 1
         var year = date.getFullYear();
-
-
         var formattedDate = (day < 10 ? '0' : '') + day + '/' + (month < 10 ? '0' : '') + month + '/' + year;
-
         return formattedDate;
     }
 

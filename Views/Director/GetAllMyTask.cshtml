@@ -132,7 +132,7 @@
 
             </div>
             <div class="modal-footer">
-                <button data-bs-dismiss="modal" id="modalClose">Cancel</button>
+                <button data-bs-dismiss="modal" class="btn btn-danger" id="modalClose">Cancel</button>
             </div>
 
         </div>
@@ -163,18 +163,26 @@
         })
     })
     function getFormattedDate(data) {
+        console.log(data);
+        if (data == null) {
+            return "";
+        }
+        if (/^\/Date\(\d+\)\/$/.test(data)) {
+            var ob = data;
+            var timestamp = parseInt(ob.replace("/Date(", "").replace(")/", ""));
+            var purchaseDate = new Date(timestamp);
+            var year = purchaseDate.getFullYear();
+            var month = ('0' + (purchaseDate.getMonth() + 1)).slice(-2);
+            var day = ('0' + purchaseDate.getDate()).slice(-2);
+            var formattedDate = day + '/' + month + '/' + year;
+            return formattedDate
+        }
         var inputDate = data;
-
         var date = new Date(inputDate);
-
-
         var day = date.getDate();
         var month = date.getMonth() + 1; // January is 0, so we add 1
         var year = date.getFullYear();
-
-        
         var formattedDate = (day < 10 ? '0' : '') + day + '/' + (month < 10 ? '0' : '') + month + '/' + year;
-
         return formattedDate;
     }
     $(document).on("submit", "#AddTaskForm", function (e) {
@@ -291,45 +299,47 @@
         dataTable.on('length.dt', function (e, settings, len) {
             var from = $("#TasksDataTable").DataTable().rows().count();
             console.log("from" + from);
+            if (len == -1 || (len > from)) {
+                $.ajax({
+                    method: "GET",
+                    url: "/AJAX/FetchFromTo?from=" + from + "&to=" + len,
+                    success: function (data) {
+                        const dataToPrint = JSON.parse(data.data);
+                        console.log(dataToPrint);
 
-            $.ajax({
-                method: "GET",
-                url: "/AJAX/FetchFromTo?from=" + from + "&to=" + len,
-                success: function (data) {
-                    const dataToPrint = JSON.parse(data.data);
-                    console.log(dataToPrint);
+                        if (data.status == "Success") {
+                            dataToPrint.forEach(item => {
+                                var row = $("#TasksDataTable").DataTable().row.add(
+                                    {
+                                        TaskId: item.TaskId,
+                                        TaskDate: getFormattedDate(item.TaskDate),
+                                        TaskName: item.TaskName,
+                                        Description: item.TaskDescription,
+                                        Approver: item.ApproverFirstName + " " + item.ApproverLastName,
+                                        ApprovedBy: (item.ApprovedByFirstName == null ? '' : item.ApprovedByFirstName) + " " + (item.ApprovedByLastName == null ? '' : item.ApprovedByLastName),
+                                        Status: item.Status,
+                                        ModifiedOn: getFormattedDate(item.ModifiedOn),
+                                        ApprovedOn: getFormattedDate(item.ApprovedDate),
+                                        Actions: null
+                                    }
+                                ).draw();
+                                /*  $(row.node()).attr("data-id", dataToPrint.TaskId);*/
 
-                    if (data.status == "Success") {
-                        dataToPrint.forEach(item => {
-                            var row = $("#TasksDataTable").DataTable().row.add(
-                                {
-                                    TaskId: item.TaskId,
-                                    TaskDate: getFormattedDate(item.TaskDate),
-                                    TaskName: item.TaskName,
-                                    Description: item.TaskDescription,
-                                    Approver: item.ApproverFirstName + " " + item.ApproverLastName,
-                                    ApprovedBy: (item.ApprovedByFirstName == null ? '' : item.ApprovedByFirstName) + " " + (item.ApprovedByLastName == null ? '' : item.ApprovedByLastName),
-                                    Status: item.Status,
-                                    ModifiedOn: getFormattedDate(item.ModifiedOn),
-                                    ApprovedOn: item.ApprovedDate,
-                                    Actions: null
-                                }
-                            ).draw();
-                            /*  $(row.node()).attr("data-id", dataToPrint.TaskId);*/
+                            })
+                            $.notify(data.message, "success");
+                        }
+                        else {
+                            $.notify("Something Went Wrong", "error");
+                        }
+                        console.log(data);
 
-                        })
-                        $.notify(data.message, "success");
+                    },
+                    error: function (err) {
+                        console.log(err);
                     }
-                    else {
-                        $.notify("Something Went Wrong", "error");
-                    }
-                    console.log(data);
-
-                },
-                error: function (err) {
-                    console.log(err);
-                }
-            })
+                })
+            }
+           
 
             console.log(len);
         })
