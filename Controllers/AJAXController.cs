@@ -390,6 +390,7 @@ namespace HRMS.Controllers
             int draw = Convert.ToInt32(Request["draw"]);
             int start = Convert.ToInt32(Request["start"]);
             int length = Convert.ToInt32(Request["length"]);
+
             string searchValue = Request["search[value]"];
             var sortColumn = Request["columns[" + Request["order[0][column]"] + "][name]"];
             var sortColumnDirection = Request["order[0][dir]"];
