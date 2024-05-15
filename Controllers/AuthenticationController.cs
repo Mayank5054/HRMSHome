@@ -21,7 +21,19 @@ namespace HRMS.Controllers
         // GET: Authorization/Login
         public ActionResult Login()
         {
-            var cultureInfo = new CultureInfo("hi"); ;
+            List<Task> _task = _db.Tasks.ToList();
+            var _taskBygroup = _task.GroupBy(x => x.EmployeeId);
+  
+            foreach (var i in _taskBygroup)
+            { 
+                foreach(var j in i)
+                {
+                    Console.WriteLine("xckjdfnjb");
+                }
+                //int j = i.Count();
+                //Console.WriteLine(j);
+            }
+            var cultureInfo = new CultureInfo("hi"); 
             Console.WriteLine(cultureInfo);
             Thread.CurrentThread.CurrentUICulture = cultureInfo;
             Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(cultureInfo.Name);

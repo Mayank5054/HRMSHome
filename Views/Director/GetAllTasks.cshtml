@@ -62,7 +62,7 @@
     <tbody>
         @foreach (Task i in Model)
         {
-            <tr id="@i.TaskId">
+            <tr id="@i.TaskId"> 
                 <th>@i.TaskId</th>
                 <td>@i.Employee2.FirstName @i.Employee2.LastName</td>
                 <td>@i.TaskDate.Value.ToShortDateString()</td>
@@ -133,8 +133,44 @@
     </tbody>
 
 </table>
-
 <script>
+    function ApproveOrRejectTask(id, op) {
+
+        $.ajax({
+            method: "GET",
+            url: "/AJAX/ApproveTask/" + id + "?status=" + op,
+            success: function (data) {
+                let labelColorClass;
+                console.log(data);
+
+
+                if (op == "Rejected") {
+                    labelColorClass = "label-danger";
+                }
+                else {
+                    labelColorClass = "label-success";
+                }
+
+                if (data.status == "Success") {
+                    const spanToAppend = `<span class='label ${labelColorClass}'>${op}</span>`;
+                    $("#" + id).find("td:eq(7)").html(spanToAppend);
+                    $("#" + id).find("td:eq(5)").text(data.data1.ApprovedOrRejectedBy);
+                    $("#" + id).find("td:eq(6)").text(getFormattedDate(data.data1.ApprovedORRejectedOn));
+                    $.notify(data.message, "success");
+                }
+                else {
+                    $.notify(data.message, "error");
+                }
+
+            },
+            error: function (err) {
+                $.notify("Something Went Wrong", "error");
+                console.log(err);
+            }
+        })
+    }
+</script>
+@*<script>
     $(document).ready(function () {
         var dataTable = $("#TaskApproveDataTable").DataTable({
             lengthMenu: [
@@ -334,5 +370,136 @@ onclick="ApproveOrRejectTask(${id},'Rejected')">
             }
         })
     }
-</script>
+</script>*@
 
+<script>
+    $(document).ready(function () {
+        $("#TaskApproveDataTable").DataTable({
+            serverSide: true,
+            ajax: {
+                url: "/AJAX/HandleApproveDataTable",
+                type: "POST",
+            },
+            columns: [
+                {
+                    data: "TaskId",
+                    name: "TaskId",
+                    visible: false,
+                },
+                {
+                    data: "EmployeeName",
+            name:"EmployeeName"    },
+                {
+                    data: "TaskDate",
+                    name: "TaskDate",
+                    render: function (data, type, row) {
+                        return getFormattedDate(data);
+                    }
+                },
+                { data: "TaskName", name: "TaskName", },
+                { data: "TaskDescription", name: "TaskDescription" },
+                { data: "Approver", name: "Approver" },
+                { data: "ApprovedBy", name: "ApprovedBy" },
+                {
+                    data: "ApprovedOn",
+                    name: "ApprovedOn",
+                    render: function (data, type, row) {
+                        return getFormattedDate(data);
+                    }
+                },
+                { data: "Status", name: "Status" },
+                {
+                    data: 'ModifiedOn',
+                    name: 'ModifiedOn',
+                    render: function (data, type, row) {
+                        return getFormattedDate(data);
+                    }
+                },
+                {
+                    data: 'Approve',
+                   
+                },
+                  {
+                    data: 'Reject',
+                    
+                },
+                {data:"Approver1Id",visible :false }
+
+            ],
+
+
+            createdRow: function (row, data, dataIndex) {
+                console.log(data);
+                console.log(data);
+                id = data.TaskId;
+                let approveButton;
+                let rejectButton;
+                if (data.Approver1Id == 1) {
+                    approveButton = `<button class="btn-info text-info" style="background:none;border:none"
+           onclick="ApproveOrRejectTask(${id},'Approved')" disabled>
+     Approve
+ </button>`
+
+                    rejectButton = `
+<button class="btn-danger text-danger " style="background:none;border:none"
+
+onclick="ApproveOrRejectTask(${id},'Rejected')" disabled>
+     Rejected
+ </button>`;
+                }
+                else {
+                    approveButton = `<button class="btn-info text-info" style="background:none;border:none"
+           onclick="ApproveOrRejectTask(${id},'Approved')">
+     Approve
+ </button>`
+
+                    rejectButton = `
+<button class="btn-danger text-danger " style="background:none;border:none"
+
+onclick="ApproveOrRejectTask(${id},'Rejected')">
+     Rejected
+ </button>`;
+                }
+
+                if (data.Status == "Approved") {
+                    labelColorClass = "label-success";
+                }
+                else if (data.Status == "Rejected") {
+                    labelColorClass = "label-danger";
+                }
+                else {
+                    labelColorClass = "label-warning";
+                }
+                const spanToAppend = `<span class='label ${labelColorClass}'>${data.Status}</span>`
+                $(row).attr("id", id);
+                $(row).find("td:eq(7)").html(spanToAppend);
+                $(row).find("td:eq(9)").html(approveButton);
+                $(row).find("td:eq(10)").html(rejectButton);
+            }
+        })
+
+    })
+    function getFormattedDate(data) {
+        console.log(data);
+        if (data == null) {
+            return "";
+        }
+        if (/^\/Date\(\d+\)\/$/.test(data)) {
+            var ob = data;
+            var timestamp = parseInt(ob.replace("/Date(", "").replace(")/", ""));
+            var purchaseDate = new Date(timestamp);
+            var year = purchaseDate.getFullYear();
+            var month = ('0' + (purchaseDate.getMonth() + 1)).slice(-2);
+            var day = ('0' + purchaseDate.getDate()).slice(-2);
+            var formattedDate = day + '/' + month + '/' + year;
+            return formattedDate
+        }
+        var inputDate = data;
+        var date = new Date(inputDate);
+        var day = date.getDate();
+        var month = date.getMonth() + 1; // January is 0, so we add 1
+        var year = date.getFullYear();
+        var formattedDate = (day < 10 ? '0' : '') + day + '/' + (month < 10 ? '0' : '') + month + '/' + year;
+        return formattedDate;
+    }
+</script>

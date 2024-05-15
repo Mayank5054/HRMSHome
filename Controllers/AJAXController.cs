@@ -106,6 +106,7 @@ namespace HRMS.Controllers
         {
             int userId = int.Parse(Session["userId"].ToString());
             int roleId = int.Parse(Session["RoleId"].ToString());
+            int min = _db.Employees.Min(x=>x.EmployeeId);
             object taskData = new {};
             if (to == -1)
             {
@@ -320,5 +321,144 @@ namespace HRMS.Controllers
                 return Json(new { status = "Failure", message = "UnAuthorized Access" }, JsonRequestBehavior.AllowGet);
             }
         }
+
+        [HttpPost]
+        public ActionResult HandleDataTable()
+       {
+            int userId = int.Parse(Session["userId"].ToString());
+            int roleId = int.Parse(Session["RoleId"].ToString());
+            int draw = Convert.ToInt32(Request["draw"]);
+            int start = Convert.ToInt32(Request["start"]);
+            int length = Convert.ToInt32(Request["length"]);
+            string searchValue = Request["search[value]"];
+            var sortColumn = Request["columns[" + Request["order[0][column]"] + "][name]"];
+            var sortColumnDirection = Request["order[0][dir]"];
+
+            var data = _db.Tasks.Where(x => x.EmployeeId == userId);
+
+            if (!string.IsNullOrEmpty(searchValue))
+            {
+                data = data.Where(x =>  
+                (x.Employee1.FirstName + " " + x.Employee1.LastName).Contains(searchValue) &&
+                (x.Employee.FirstName + " " + x.Employee.LastName).Contains(searchValue)
+                );
+            }
+            if(!string.IsNullOrEmpty(sortColumn) && sortColumn=="TaskDate") {
+                var sortingExpression = sortColumn + " " + sortColumnDirection;
+                if(sortColumnDirection == "asc")
+                {
+                    data = data.OrderBy(x => x.TaskDate);
+                }
+                else
+                {
+                    data = data.OrderByDescending(x => x.TaskDate);
+                }
+            }
+            else
+            {
+                data = data.OrderBy(x => x.TaskDate);
+            }
+           var data1 = data
+                .Skip(start)
+                .Take(length)
+                .Select(x => new {
+                ApprovedDate = x.ApprovedORRejectedOn,
+                x.TaskId,
+                x.TaskDate,
+                x.TaskName,
+                x.TaskDescription,
+                x.Status,
+                x.ModifiedOn,
+                ApprovedOn = x.ApprovedORRejectedOn,
+                Approver = x.Employee1.FirstName + " " + x.Employee1.LastName,
+                ApprovedBy = x.Employee.FirstName + " " + x.Employee.LastName,
+            });
+
+            
+            int recordsTotal = data1.Count();
+            return Json(new {
+                draw = draw,
+                recordsTotal = recordsTotal,
+                recordsFiltered = recordsTotal,
+               data = data1 }, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult HandleApproveDataTable()
+        {
+            int userId = int.Parse(Session["userId"].ToString());
+            int roleId = int.Parse(Session["RoleId"].ToString());
+            int draw = Convert.ToInt32(Request["draw"]);
+            int start = Convert.ToInt32(Request["start"]);
+            int length = Convert.ToInt32(Request["length"]);
+            string searchValue = Request["search[value]"];
+            var sortColumn = Request["columns[" + Request["order[0][column]"] + "][name]"];
+            var sortColumnDirection = Request["order[0][dir]"];
+            IQueryable<Task> data;
+
+            if (roleId !=2)
+            {
+              data = _db.Tasks.Where(x => x.Employee2.DepartmentId > roleId);
+            }
+            else
+            {
+                data = _db.Tasks.Where(x => x.ApproverID == userId);
+            }
+            
+
+            if (!string.IsNullOrEmpty(searchValue))
+            {
+                data = data.Where(x =>
+                (x.Employee1.FirstName + " " + x.Employee1.LastName).Contains(searchValue) &&
+                (x.Employee.FirstName + " " + x.Employee.LastName).Contains(searchValue) &&
+                (x.Employee2.FirstName + " " + x.Employee2.LastName).Contains(searchValue)
+                );
+            }
+            if (!string.IsNullOrEmpty(sortColumn) && sortColumn == "TaskDate")
+            {
+               
+                if (sortColumnDirection == "asc")
+                {
+                    data = data.OrderBy(x => x.TaskDate);
+                }
+                else
+                {
+                    data = data.OrderByDescending(x => x.TaskDate);
+                }
+            }
+            else
+            {
+                data = data.OrderBy(x => x.TaskDate);
+            }
+            var data1 = data
+                 .Skip(start)
+                 .Take(length)
+                 .Select(x => new {
+                     ApprovedDate = x.ApprovedORRejectedOn,
+                     x.TaskId,
+                     x.TaskDate,
+                     x.TaskName,
+                     x.TaskDescription,
+                     x.Status,
+                     x.ModifiedOn,
+                     ApprovedOn = x.ApprovedORRejectedOn,
+                     Approver = x.Employee1.FirstName + " " + x.Employee1.LastName,
+                     ApprovedBy = x.Employee.FirstName + " " + x.Employee.LastName,
+                     Approver1Id = x.Employee.DepartmentId,
+                     EmployeeName = x.Employee2.FirstName + " " + x.Employee2.LastName,
+                     Approve = "",
+                     Reject = ""
+                 });
+
+
+            int recordsTotal = data1.Count();
+            return Json(new
+            {
+                draw = draw,
+                recordsTotal = recordsTotal,
+                recordsFiltered = recordsTotal,
+                data = data1
+            }, JsonRequestBehavior.AllowGet);
+        }
+
     }
 }
