@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Web;
 using System.Web.Mvc;
 
@@ -343,15 +344,64 @@ namespace HRMS.Controllers
                 (x.Employee.FirstName + " " + x.Employee.LastName).Contains(searchValue)
                 );
             }
-            if(!string.IsNullOrEmpty(sortColumn) && sortColumn=="TaskDate") {
-                var sortingExpression = sortColumn + " " + sortColumnDirection;
-                if(sortColumnDirection == "asc")
+            if(!string.IsNullOrEmpty(sortColumn)) {
+             
+                switch (sortColumn)
                 {
-                    data = data.OrderBy(x => x.TaskDate);
-                }
-                else
-                {
-                    data = data.OrderByDescending(x => x.TaskDate);
+                    case "TaskDate":
+                        if (sortColumnDirection == "asc")
+                        {
+                            data = data.OrderBy(x => x.TaskDate);
+                        }
+                        else
+                        {
+                            data = data.OrderByDescending(x => x.TaskDate);
+                        }
+                        break;
+                  
+                    case "TaskName":
+                        if (sortColumnDirection == "asc")
+                        {
+                            data = data.OrderBy(x => x.TaskName);
+                        }
+                        else
+                        {
+                            data = data.OrderByDescending(x => x.TaskName);
+                        }
+                        break;
+                    case "Status":
+                        if (sortColumnDirection == "asc")
+                        {
+                            data = data.OrderBy(x => x.Status);
+                        }
+                        else
+                        {
+                            data = data.OrderByDescending(x => x.Status);
+                        }
+                        break;
+                    case "Approver":
+                        if (sortColumnDirection == "asc")
+                        {
+                            data = data.OrderBy(x => x.Employee.FirstName + " " + x.Employee.LastName);
+                        }
+                        else
+                        {
+                            data = data.OrderByDescending(x => x.Employee.FirstName + " " + x.Employee.LastName);
+                        }
+                        break;
+                    case "ApprovedOn":
+                        if (sortColumnDirection == "asc")
+                        {
+                            data = data.OrderBy(x => x.ApprovedORRejectedOn);
+                        }
+                        else
+                        {
+                            data = data.OrderByDescending(x => x.ApprovedORRejectedOn);
+                        }
+                        break;
+                    default:
+                        data = data.OrderByDescending(x => x.TaskDate);
+                        break;
                 }
             }
             else
@@ -392,6 +442,7 @@ namespace HRMS.Controllers
             int length = Convert.ToInt32(Request["length"]);
 
             string searchValue = Request["search[value]"];
+            var str = Request["order[0][column]"];
             var sortColumn = Request["columns[" + Request["order[0][column]"] + "][name]"];
             var sortColumnDirection = Request["order[0][dir]"];
             IQueryable<Task> data;
@@ -414,17 +465,76 @@ namespace HRMS.Controllers
                 (x.Employee2.FirstName + " " + x.Employee2.LastName).Contains(searchValue)
                 );
             }
-            if (!string.IsNullOrEmpty(sortColumn) && sortColumn == "TaskDate")
+            if (!string.IsNullOrEmpty(sortColumn))
             {
+
+                switch (sortColumn)
+                {
+                    case "TaskDate":
+                        if (sortColumnDirection == "asc")
+                        {
+                            data = data.OrderBy(x => x.TaskDate);
+                        }
+                        else
+                        {
+                            data = data.OrderByDescending(x => x.TaskDate);
+                        }
+                        break;
+                    case "EmployeeName":
+                        if (sortColumnDirection == "asc")
+                        {
+                            data = data.OrderBy(x => x.Employee2.FirstName + " " + x.Employee2.LastName);
+                        }
+                        else
+                        {
+                            data = data.OrderByDescending(x => x.Employee2.FirstName + " " + x.Employee2.LastName);
+                        }
+                        break;
+                    case "TaskName":
+                        if (sortColumnDirection == "asc")
+                        {
+                            data = data.OrderBy(x => x.TaskName);
+                        }
+                        else
+                        {
+                            data = data.OrderByDescending(x => x.TaskName);
+                        }
+                        break;
+                    case "Status":
+                        if (sortColumnDirection == "asc")
+                        {
+                            data = data.OrderBy(x => x.Status);
+                        }
+                        else
+                        {
+                            data = data.OrderByDescending(x => x.Status);
+                        }
+                        break;
+                    case "Approver":
+                        if (sortColumnDirection == "asc")
+                        {
+                            data = data.OrderBy(x => x.Employee.FirstName + " " + x.Employee.LastName);
+                        }
+                        else
+                        {
+                            data = data.OrderByDescending(x => x.Employee.FirstName + " " + x.Employee.LastName);
+                        }
+                        break;
+                    case "ApprovedOn":
+                        if (sortColumnDirection == "asc")
+                        {
+                            data = data.OrderBy(x => x.ApprovedORRejectedOn);
+                        }
+                        else
+                        {
+                            data = data.OrderByDescending(x => x.ApprovedORRejectedOn);
+                        }
+                        break;
+                    default:
+                        data = data.OrderByDescending(x => x.TaskDate);
+                        break;
+                }
                
-                if (sortColumnDirection == "asc")
-                {
-                    data = data.OrderBy(x => x.TaskDate);
-                }
-                else
-                {
-                    data = data.OrderByDescending(x => x.TaskDate);
-                }
             }
             else
             {
@@ -460,6 +570,13 @@ namespace HRMS.Controllers
                 data = data1
             }, JsonRequestBehavior.AllowGet);
         }
+  
+private object GetPropertyValue(object obj, string propertyName)
 
+        {
+
+            return obj.GetType().GetProperty(propertyName)?.GetValue(obj, null);
+
+        }
     }
 }

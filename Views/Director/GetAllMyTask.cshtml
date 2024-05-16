@@ -682,6 +682,8 @@
                     data: "TaskId",
                     name: "TaskId",
                     visible: false,
+                    searchable: false,
+                    orderable: false
                 },
                 {
                     data: "TaskDate",
@@ -691,12 +693,20 @@
                     }
                 },
                 { data: "TaskName", name: "TaskName", },
-                { data: "TaskDescription", name: "TaskDescription" },
-                { data: "Approver", name: "Approver" },
-                { data: "ApprovedBy", name: "ApprovedBy" },
+                {
+                    data: "TaskDescription", name: "TaskDescription",
+                    searchable: false,
+                    orderable: false
+                },
+                {
+                    data: "Approver", name: "Approver" },
+                {
+                    data: "ApprovedBy", name: "ApprovedBy", searchable: false,
+                    orderable: false },
                 {
                     data: "ApprovedOn",
                     name: "ApprovedOn",
+                 
                     render: function (data, type, row) {
                         return getFormattedDate(data);
                     }
@@ -711,6 +721,8 @@
                 },
                 {
                     data: 'Actions',
+                    searchable: false,
+                    orderable: false,
                     render: function (data, type, row) {
                         return `<a href="" id=${row.task_id} class="EditTask">Edit</a> | <a href="" class="DeleteTaskByUser" id=${row.task_id} class="DeleteTask">Delete</a>`;
                     },

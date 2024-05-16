@@ -384,6 +384,8 @@ onclick="ApproveOrRejectTask(${id},'Rejected')">
                 {
                     data: "TaskId",
                     name: "TaskId",
+                    searchable: false,
+                    orderable: false,
                     visible: false,
                 },
                 {
@@ -397,9 +399,13 @@ onclick="ApproveOrRejectTask(${id},'Rejected')">
                     }
                 },
                 { data: "TaskName", name: "TaskName", },
-                { data: "TaskDescription", name: "TaskDescription" },
+                {
+                    data: "TaskDescription", name: "TaskDescription", searchable: false,
+                    orderable: false },
                 { data: "Approver", name: "Approver" },
-                { data: "ApprovedBy", name: "ApprovedBy" },
+                {
+                    data: "ApprovedBy", name: "ApprovedBy", searchable: false,
+                    orderable: false },
                 {
                     data: "ApprovedOn",
                     name: "ApprovedOn",
@@ -417,13 +423,17 @@ onclick="ApproveOrRejectTask(${id},'Rejected')">
                 },
                 {
                     data: 'Approve',
-                   
+                    searchable: false,
+                    orderable: false
                 },
                   {
                     data: 'Reject',
-                    
+                      searchable: false,
+                      orderable: false
                 },
-                {data:"Approver1Id",visible :false }
+                {
+                    data: "Approver1Id", visible: false, searchable: false,
+                    orderable: false }
 
             ],
 
