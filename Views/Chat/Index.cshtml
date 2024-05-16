@@ -1,0 +1,42 @@
+﻿<h3>Welcome To Chat Page</h3>
+@{ 
+    int userId = int.Parse(Session["userId"].ToString());
+    string userName = (string)Session["userName"];
+}
+<div id="chatHistory">
+
+</div>
+<input type="text" id="message" />
+
+<button id="sendMessage" onclick="sendMessage()">Send</button>
+
+<script>
+    var socket = new WebSocket("ws://localhost:5355?userId="+@userId);
+
+    socket.onopen = function () {
+        console.log("WebSocket connected");
+    };
+
+    socket.onmessage = function (event) {
+        console.log(event);
+        jsonData = JSON.parse(event.data);
+        $("#chatHistory").append(`<p style="bg-primary" >${jsonData.sender} : ${jsonData.message}</p>`);
+        console.log("Received message: " + event.data);
+    };
+
+    socket.onclose = function () {
+        console.log("WebSocket closed");
+    };
+
+    function sendMessage() {
+        /*       var message = document.getElementById("messageInput").value;*/
+        socket.send(
+        JSON.stringify({
+            id: 1,
+            sender:"@userName",
+            message: $("#message").val()
+        })
+        );
+    }
+  
+</script>

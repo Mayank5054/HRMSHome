@@ -2,6 +2,10 @@
 @using HRMS.Models;
 @model List<Employee>
 
+@{ 
+    int userId = int.Parse(Session["userId"].ToString());
+    string userName = (string)Session["userName"];
+}
 @if (TempData["LogInAsUser"] != null)
 {
     <script>
@@ -95,6 +99,7 @@
         <th>
             Delete
         </th>
+        <th>Chat</th>
     </tr>
 
     @foreach (Employee i in Model)
@@ -114,7 +119,7 @@
 
             <td>@i.Role.Name</td>
             <td>@i.Employee2.FirstName @i.Employee2.LastName</td>
-           
+
             <td>
                 @Html.ActionLink("Edit", "EditEmployee", "Director",
                    new { id = @i.EmployeeId }, new { @class = "btn btn-primary" })
@@ -125,7 +130,13 @@
                     Delete
                 </button>
                 @*@Html.ActionLink("Delete", "DeleteEmployee", "Director",
-            new { id = @i.EmployeeId }, new { @class = "btn btn-danger" })*@
+                    new { id = @i.EmployeeId }, new { @class = "btn btn-danger" })*@
+            </td>
+            <td>
+                <button 
+                        data-bs-toggle="modal",
+                        data-bs-target="#chatModel"
+                        class="btn btn-outline-primary" onclick="openChatModel(@i.EmployeeId)">Click to Chat</button>
             </td>
         </tr>
 
@@ -149,21 +160,51 @@
         </div>
     </div>
 </div>
-<div class="modal" id="myModal">
+<div class="modal" id="chatModel">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-
-
             <div class="modal-body" style="height:200px;width:500px">
-                <p class="h3 p-3">Are You Sure ?</p>
-                <p>
-                    <button class="btn btn-success" id="yesDelete">Yes</button>
-                    <button class="btn btn-info" data-bs-dismiss="modal" id="noDelete">No</button>
-                </p>
+                <div id="chatHistory">
 
+                </div>
+                <input type="text" id="message" />
+                <button id="sendMessage">Send</button>
             </div>
-
         </div>
     </div>
 </div>
 
+<script>
+    var socket = new WebSocket("ws://localhost:5355?userId="+@userId);
+
+    socket.onopen = function () {
+        console.log("WebSocket connected");
+    };
+
+    socket.onmessage = function (event) {
+        console.log(event);
+        jsonData = JSON.parse(event.data);
+        $.notify(`${jsonData.sender} has sended a message`,"info");
+        $("#chatHistory").append(`<p style="bg-primary" >${jsonData.sender} : ${jsonData.message}</p>`);
+        console.log("Received message: " + event.data);
+    };
+
+    socket.onclose = function () {
+        console.log("WebSocket closed");
+    };
+
+    function sendMessage(id) {
+        /*       var message = document.getElementById("messageInput").value;*/
+        socket.send(
+        JSON.stringify({
+             id: id,
+  sender: "@userName",
+  message: $("#message").val()
+        })
+        );
+    }
+    function openChatModel(id) {
+        $("#chatHistory").empty();
+        $("#sendMessage").attr("onclick", `sendMessage(${id})`);
+    }
+</script>

@@ -8,12 +8,15 @@ using System.Web.Routing;
 using System.Threading;
 using System.Reflection;
 using System.Resources;
+using HRMS.Controllers;
 namespace HRMS
 {
     public class MvcApplication : System.Web.HttpApplication
     {
         protected void Application_Start()
         {
+            AreaRegistration.RegisterAllAreas();
+
             string userLaanguage = "hi";
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
@@ -22,7 +25,9 @@ namespace HRMS
             Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("hi-IN");
             Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("hi-IN");
             ResourceManager rm = new ResourceManager("HRMS.Resources", Assembly.GetExecutingAssembly());
-          
+
+            var controller = new WebSocketController();
+            controller.StartWebSocket();
         }
     }
 }

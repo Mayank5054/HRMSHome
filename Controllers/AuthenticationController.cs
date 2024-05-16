@@ -52,12 +52,15 @@ namespace HRMS.Controllers
             }
             else
             {
-                Session["userName"] = _emp.FirstName + _emp.LastName;
+
+                Session["userName"] = _emp.FirstName + " " + _emp.LastName;
                 Session["Role"] = _emp.Role.Name;
                 Session["RoleId"] = _emp.DepartmentId;
                 Session["userId"] = _emp.EmployeeId;
                 Session["ReportingPersonId"] = _emp.ReportingPerson;
-                if(_emp.DepartmentId == 1)
+
+       
+                if (_emp.DepartmentId == 1)
                 {
                     TempData["LogInAsUser"] = "Logged In As A Director";
                     return RedirectToAction("AllEmployees", "Director");

@@ -35,104 +35,106 @@
 <p>
     <h3>Approve Or Reject Tasks</h3>
 </p>
-
-<table class="table table-bordered " id="TaskApproveDataTable">
-    <thead>
-        <tr>
-            <th>Task Id</th>
-            <th>Employee Name</th>
-            <th>Task Date</th>
-            <th>Task Name</th>
-            <th>Task Description</th>
-            <th>Approver</th>
-            <th>Approved By</th>
-            <th>ApprovedOr On</th>
-            <th>Status</th>
-            <th>Modified On</th>
-            <th>
-                Approve
-            </th>
-            <th>
-                reject
-            </th>
-            <th>ApproverrId</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        @foreach (Task i in Model)
-        {
-            <tr id="@i.TaskId"> 
-                <th>@i.TaskId</th>
-                <td>@i.Employee2.FirstName @i.Employee2.LastName</td>
-                <td>@i.TaskDate.Value.ToShortDateString()</td>
-                <td>@i.TaskName</td>
-                <td>@i.TaskDescription</td>
-                <td>@i.Employee1.FirstName  @i.Employee1.LastName</td>
-                @if (i.Employee != null)
-                {
-                    <td>@i.Employee.FirstName @i.Employee.LastName</td>
-                }
-                else
-                {
-                    <td></td>
-                }
-
-                @if (i.ApprovedORRejectedOn != null)
-                {
-                    <td>@i.ApprovedORRejectedOn.Value.ToShortDateString()</td>
-                }
-                else
-                {
-                    <td></td>
-                }
-                <td>@i.Status</td>
-                @if (i.ModifiedOn != null)
-                {
-                    <td>@i.ModifiedOn.Value.ToShortDateString()</td>
-                }
-                else
-                {
-                    <td></td>
-                }
-
-                <td></td>
-                <td></td>
-                <td>@i.Employee.DepartmentId</td>
-                @*@{
-                        int userId = int.Parse(Session["userId"].ToString());
-                        int roleId = int.Parse(Session["RoleId"].ToString());
-                        if (roleId != 1 && i.Employee.DepartmentId == 1)
-                        {
-                            <td>
-                                @Html.ActionLink("Approve", "ApproveTask", "Director",
-                                   new { id = @i.TaskId, status = "Approved" }, new { @class = "btn btn-outline-info", @disabled = "disabled" })
-                            </td>
-                            <td>
-                                @Html.ActionLink("Reject", "ApproveTask", "Director",
-                                   new { id = @i.TaskId, status = "Rejected" }, new { @class = "btn btn-outline-danger", @disabled = "disabled" })
-                            </td>
-                        }
-                        else
-                        {
-                            <td>
-                                @Html.ActionLink("Approve", "ApproveTask", "Director",
-                                   new { id = @i.TaskId, status = "Approved" }, new { @class = "btn btn-outline-info" })
-                            </td>
-                            <td>
-                                @Html.ActionLink("Reject", "ApproveTask", "Director",
-                                   new { id = @i.TaskId, status = "Rejected" }, new { @class = "btn btn-outline-danger" })
-                            </td>
-                        }
-                    }*@
-
-
+<div class="container-fluid">
+    <table class="table table-bordered " id="TaskApproveDataTable" style="width:100%">
+        <thead>
+            <tr>
+                <th>Task Id</th>
+                <th>Employee Name</th>
+                <th>Task Date</th>
+                <th>Task Name</th>
+                <th>Task Description</th>
+                <th>Approver</th>
+                <th>Approved By</th>
+                <th>ApprovedOr On</th>
+                <th>Status</th>
+                <th>Modified On</th>
+                <th>
+                    Approve
+                </th>
+                <th>
+                    reject
+                </th>
+                <th>ApproverrId</th>
             </tr>
+        </thead>
 
-        }
-    </tbody>
+        <tbody>
+            @foreach (Task i in Model)
+            {
+                <tr id="@i.TaskId">
+                    <th>@i.TaskId</th>
+                    <td>@i.Employee2.FirstName @i.Employee2.LastName</td>
+                    <td>@i.TaskDate.Value.ToShortDateString()</td>
+                    <td>@i.TaskName</td>
+                    <td>@i.TaskDescription</td>
+                    <td>@i.Employee1.FirstName  @i.Employee1.LastName</td>
+                    @if (i.Employee != null)
+                    {
+                        <td>@i.Employee.FirstName @i.Employee.LastName</td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
 
-</table>
+                    @if (i.ApprovedORRejectedOn != null)
+                    {
+                        <td>@i.ApprovedORRejectedOn.Value.ToShortDateString()</td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+                    <td>@i.Status</td>
+                    @if (i.ModifiedOn != null)
+                    {
+                        <td>@i.ModifiedOn.Value.ToShortDateString()</td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+
+                    <td></td>
+                    <td></td>
+                    <td>@i.Employee.DepartmentId</td>
+                    @*@{
+                            int userId = int.Parse(Session["userId"].ToString());
+                            int roleId = int.Parse(Session["RoleId"].ToString());
+                            if (roleId != 1 && i.Employee.DepartmentId == 1)
+                            {
+                                <td>
+                                    @Html.ActionLink("Approve", "ApproveTask", "Director",
+                                       new { id = @i.TaskId, status = "Approved" }, new { @class = "btn btn-outline-info", @disabled = "disabled" })
+                                </td>
+                                <td>
+                                    @Html.ActionLink("Reject", "ApproveTask", "Director",
+                                       new { id = @i.TaskId, status = "Rejected" }, new { @class = "btn btn-outline-danger", @disabled = "disabled" })
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    @Html.ActionLink("Approve", "ApproveTask", "Director",
+                                       new { id = @i.TaskId, status = "Approved" }, new { @class = "btn btn-outline-info" })
+                                </td>
+                                <td>
+                                    @Html.ActionLink("Reject", "ApproveTask", "Director",
+                                       new { id = @i.TaskId, status = "Rejected" }, new { @class = "btn btn-outline-danger" })
+                                </td>
+                            }
+                        }*@
+
+
+                </tr>
+
+            }
+        </tbody>
+
+    </table>
+</div>
+
 <script>
     function ApproveOrRejectTask(id, op) {
 
