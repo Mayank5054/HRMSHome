@@ -86,61 +86,68 @@
         })
     }
 </script>
-<table class="table table-bordered">
-    <tr>
-        <th>Employee Name</th>
-        <th>Birth-date</th>
-        <th>Gender</td>
-        <th>Role</th>
-        <th>Reporting Person</th>
-        <th>
-            Edit
-        </th>
-        <th>
-            Delete
-        </th>
-        <th>Chat</th>
-    </tr>
-
-    @foreach (Employee i in Model)
-    {
-        <tr id="@i.EmployeeId">
-
-            <td>@i.FirstName @i.LastName</td>
-            <td>@i.BirthDate.Value.ToShortDateString()</td>
-            @if (i.Gender == "M")
-            {
-                <td>Male</td>
-            }
-            else
-            {
-                <td>Female</td>
-            }
-
-            <td>@i.Role.Name</td>
-            <td>@i.Employee2.FirstName @i.Employee2.LastName</td>
-
-            <td>
-                @Html.ActionLink("Edit", "EditEmployee", "Director",
-                   new { id = @i.EmployeeId }, new { @class = "btn btn-primary" })
-
-            </td>
-            <td>
-                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#myModal" onclick="openModal(@i.EmployeeId)">
-                    Delete
-                </button>
-                @*@Html.ActionLink("Delete", "DeleteEmployee", "Director",
-                    new { id = @i.EmployeeId }, new { @class = "btn btn-danger" })*@
-            </td>
-            <td>
-                <button 
-                        data-bs-toggle="modal",
-                        data-bs-target="#chatModel"
-                        class="btn btn-outline-primary" onclick="openChatModel(@i.EmployeeId)">Click to Chat</button>
-            </td>
+<table class="table table-bordered" id="tableOfEmployee">
+    <thead>
+        <tr>
+            <th>Expand</th>
+            <th>Employee Name</th>
+            <th>Birth-date</th>
+            <th>Gender</td>
+            <th>Role</th>
+            <th>Reporting Person</th>
+            <th>
+                Edit
+            </th>
+            <th>
+                Delete
+            </th>
+            <th>Chat</th>
         </tr>
+    </thead>
+    <tbody>
 
-    }
+        @foreach (Employee i in Model)
+        {
+            <tr id="@i.EmployeeId">
+                <td><button class="btn btn-circle btn-danger" onclick="expandData(this,@i.EmployeeId)">^</button></td>
+
+                <td>@i.FirstName @i.LastName</td>
+                <td>@i.BirthDate.Value.ToShortDateString()</td>
+                @if (i.Gender == "M")
+                {
+                    <td>Male</td>
+                }
+                else
+                {
+                    <td>Female</td>
+                }
+
+                <td>@i.Role.Name</td>
+                <td>@i.Employee2.FirstName @i.Employee2.LastName</td>
+
+                <td>
+                    @Html.ActionLink("Edit", "EditEmployee", "Director",
+                       new { id = @i.EmployeeId }, new { @class = "btn btn-primary" })
+
+                </td>
+                <td>
+                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#myModal" onclick="openModal(@i.EmployeeId)">
+                        Delete
+                    </button>
+                    @*@Html.ActionLink("Delete", "DeleteEmployee", "Director",
+                    new { id = @i.EmployeeId }, new { @class = "btn btn-danger" })*@
+                </td>
+                <td>
+                    <button data-bs-toggle="modal" ,
+                            data-bs-target="#chatModel"
+                            class="btn btn-outline-primary" onclick="openChatModel(@i.EmployeeId)">
+                        Click to Chat
+                    </button>
+                </td>
+            </tr>
+
+        }
+    </tbody>
 </table>
 
 <div class="modal" id="myModal">
@@ -173,7 +180,21 @@
         </div>
     </div>
 </div>
-
+<script>
+   $("#tableOfEmployee").DataTable({
+        columns: [
+            { data: "Expand" },
+            { data: "EmployeeName" },
+            { data: "BirthDate" },
+            { data: "Gender" },
+            { data: "Role" },
+            { data: "ReportingPerson" }, 
+            { data: "Edit" },
+            { data:"Delete" },
+            {data:"Chat"},
+        ]
+    });
+</script>
 <script>
     var socket = new WebSocket("ws://localhost:5355?userId="+@userId);
 
@@ -194,7 +215,7 @@
     };
 
     function sendMessage(id) {
-        /*       var message = document.getElementById("messageInput").value;*/
+      
         socket.send(
         JSON.stringify({
              id: id,
@@ -206,5 +227,143 @@
     function openChatModel(id) {
         $("#chatHistory").empty();
         $("#sendMessage").attr("onclick", `sendMessage(${id})`);
+    }
+    function expandData(e,id) {
+     
+     
+        $(e).css("transform", "rotate(180deg)");
+        console.log();
+        if ($("#table" + id).length == 0) {
+            $.ajax({
+                method: "GET",
+                url: "/AJAX/GetTaskByEmployeeId/" + id,
+                success: function (data) {
+                    var jsonData = JSON.parse(data.data);
+                    var prepareTaskTable = "";
+                    jsonData.forEach(function (i) {
+                        prepareTaskTable += `
+<tr>
+<td> ${i.TaskDate} </td>
+<td> ${i.TaskName} </td>
+<td> ${i.TaskDescription} </td>
+<td> ${i.Status} </td>
+</tr>
+`
+                    });
+                    let tr = $(e).closest("tr");
+
+                    console.log(tr);
+                    let row = $("#tableOfEmployee").DataTable().row(tr);
+            
+                        let childTable = $(`
+                        <table class="table table-bordered table-responsive" id="table${id}">
+                          <thead>
+                            <tr>
+                            <th>
+    Task Date
+</th>
+                              <th>
+                                  Task Name
+                              </th>
+                              <th>
+                                  Task Description
+                              </th>
+                           
+                              <th>
+                                  Status
+                              </th>
+                           
+                            </tr>
+                          </thead>
+                          <tbody>
+                          ${prepareTaskTable}
+                          </tbody>
+                        </table>
+                  `)
+
+
+                        row.child(childTable).show();
+     //               var boilterPlate = `
+
+     //   <div id="div${id}" class="table-responsive container-fluid">
+     //   <table class="table table-hover table-bodered" id="table${id}" >
+     //   <thead>
+     //   <tr>
+     //   <th>Task Date</th>
+     //   <th>Task Name</th>
+     //   <th>Task Description</th>
+     //   <th>Status</th>
+     //   </tr>
+     //   </thead>
+     //   <tbody>
+     //`;
+                    
+     //               boilterPlate = boilterPlate + prepareTaskTable + `</tbody</table></div>`;
+
+                 /*   $("#" + id).after(boilterPlate);*/
+                    $("#table" + id).DataTable({
+                        columns: [
+                            {
+                                data: "TaskDate",
+                                render: function (data, type, row) {
+                                    return getFormattedDate(data);
+                                }
+                            },
+                            { data: "TaskName" },
+                            { data: "TaskDescription" },
+                            {
+                                data: "Status",
+                                render: function (data, type, row) {
+                                    if (data == "Approved") {
+                                        labelColorClass = "label-success";
+                                    }
+                                    else if (data == "Rejected") {
+                                        labelColorClass = "label-danger";
+                                    }
+                                    else {
+                                        labelColorClass = "label-warning";
+                                    }
+                                    return `<span class='label ${labelColorClass}'>${data}</span>`
+                                }
+                            }
+                        ]
+                    });
+                    console.log(jsonData);
+                },
+                error: function (data) {
+                }
+            })
+        }
+        else {
+            console.log("hidden");
+            $(e).css("transform", "rotate(0deg)");
+            $('#table' + id).DataTable().destroy();
+            $("#table" + id).remove();
+        }
+        
+    }
+
+    function getFormattedDate(data) {
+        console.log(data);
+        if (data == null) {
+            return "";
+        }
+        if (/^\/Date\(\d+\)\/$/.test(data)) {
+            var ob = data;
+            var timestamp = parseInt(ob.replace("/Date(", "").replace(")/", ""));
+            var purchaseDate = new Date(timestamp);
+            var year = purchaseDate.getFullYear();
+            var month = ('0' + (purchaseDate.getMonth() + 1)).slice(-2);
+            var day = ('0' + purchaseDate.getDate()).slice(-2);
+            var formattedDate = day + '/' + month + '/' + year;
+            return formattedDate
+        }
+        var inputDate = data;
+        var date = new Date(inputDate);
+        var day = date.getDate();
+        var month = date.getMonth() + 1; // January is 0, so we add 1
+        var year = date.getFullYear();
+        var formattedDate = (day < 10 ? '0' : '') + day + '/' + (month < 10 ? '0' : '') + month + '/' + year;
+        return formattedDate;
     }
 </script>

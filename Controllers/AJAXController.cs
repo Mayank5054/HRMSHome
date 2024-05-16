@@ -578,5 +578,19 @@ private object GetPropertyValue(object obj, string propertyName)
             return obj.GetType().GetProperty(propertyName)?.GetValue(obj, null);
 
         }
+
+        public ActionResult GetTaskByEmployeeId(int id)
+        {
+            var _tasks = _db.Tasks
+                .Where(x => x.EmployeeId == id).Select(x => new {
+                x.TaskId,
+                x.TaskDate,
+                x.TaskName,
+                x.TaskDescription,
+                x.Status,
+            }).ToList();
+            string jsonData = JsonConvert.SerializeObject(_tasks);
+            return Json(new { status = "Success", data = jsonData }, JsonRequestBehavior.AllowGet);
+        }
     }
 }
