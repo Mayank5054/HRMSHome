@@ -174,8 +174,12 @@
                 <div id="chatHistoryDiv">
 
                 </div>
-                <input type="text" id="message" />
-                <button id="sendMessage">Send</button>
+        
+                <div class="form-floating mt-3 mb-3 w-50 d-flex">
+                    <input type="text" class="form-control" id="message" />
+                    <button class="btn btn-primary ms-3" id="sendMessage">Send</button>
+                </div>
+               
             </div>
         </div>
     </div>
@@ -355,7 +359,11 @@
         console.log(event);
         jsonData = JSON.parse(event.data);
         $.notify(`${jsonData.sender} has sended a message`,"info");
-        $("#chatHistory").append(`<p style="bg-primary" >${jsonData.sender} : ${jsonData.message}</p>`);
+        $("#chatHistory").append(`
+                <div>
+    <p class="p-3 " style="text-align:left  "><b> ${jsonData.sender} :</b > ${ jsonData.message }</p>
+</div>`);
+        
         console.log("Received message: " + event.data);
     };
 
@@ -365,7 +373,11 @@
 
     function sendMessage(id) {
         const message = $("#message").val();
-        $("#chatHistory").append(`<p style="bg-primary" > @userName : ${message}</p>`);
+        $("#chatHistory").append(`
+        <div>
+    <p class="p-3 " style="text-align:right  "><b> @userName :</b>   ${message}</p>
+</div>
+        `);
         socket.send(
         JSON.stringify({
              id: id,
@@ -376,7 +388,7 @@
         );
     }
     function openChatModel(id) {
-        $("#chatHistory").empty();
+        $("#chatHistoryDiv").empty();
         $.ajax({
             method: "GET",
             url: "/Partial/GetChat/" + id,

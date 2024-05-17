@@ -3,9 +3,17 @@
 @model List<Chat>
 
 
+@{
+    int userId = int.Parse(Session["userId"].ToString());
+    string userName = (string)Session["userName"];
+}
+
 <div id="chatHistory">
     @foreach (Chat i in Model)
     {
-        <p>@i.Employee1.FirstName @i.Employee1.LastName :  @i.data</p>
+        <div>
+            <p class="p-3 " style="text-align: @(i.Employee1.EmployeeId == userId ? "right" : "left") "><b>@i.Employee1.FirstName @i.Employee1.LastName :</b>  @i.data</p>
+        </div>
+       
     }
 </div>

@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-
+using HRMS.Filters;
 namespace HRMS.Controllers
 {
+    [LoginFilter]
     public class ChatController : Controller
     {
         MayankEntities _db;
@@ -14,6 +15,8 @@ namespace HRMS.Controllers
         public ChatController() { 
         _db = new MayankEntities();
         }
+
+        [@Authorize(new string[] {"Employee","Manager"})]
         public ActionResult Index()
         {
             int userId = (int)Session["userId"];
