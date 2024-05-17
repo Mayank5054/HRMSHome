@@ -12,6 +12,8 @@ namespace HRMS.Models
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+    using System.Data.Entity.Core.Objects;
+    using System.Linq;
     
     public partial class MayankEntities : DbContext
     {
@@ -30,5 +32,16 @@ namespace HRMS.Models
         public virtual DbSet<Task> Tasks { get; set; }
         public virtual DbSet<Team> Teams { get; set; }
         public virtual DbSet<TeamsDetail> TeamsDetails { get; set; }
+        public virtual DbSet<Chat> Chats { get; set; }
+    
+        public virtual ObjectResult<getAll_Result> getAll()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<getAll_Result>("getAll");
+        }
+    
+        public virtual ObjectResult<Nullable<int>> RETURNSOMETHING()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("RETURNSOMETHING");
+        }
     }
 }

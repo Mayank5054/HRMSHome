@@ -583,7 +583,10 @@ private object GetPropertyValue(object obj, string propertyName)
         {
             var _tasks = _db.Tasks
                 .Where(x => x.EmployeeId == id).Select(x => new {
-                x.TaskId,
+                    ApprovedOn = x.ApprovedORRejectedOn,
+                    Approver = x.Employee1.FirstName + " " + x.Employee1.LastName,
+                    ApprovedBy = x.Employee.FirstName + " " + x.Employee.LastName,
+                    x.TaskId,
                 x.TaskDate,
                 x.TaskName,
                 x.TaskDescription,

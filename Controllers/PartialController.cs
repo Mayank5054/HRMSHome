@@ -26,5 +26,11 @@ namespace HRMS.Controllers
             ViewBag.Operation = "Edit";
             return PartialView("_TaskForm",_task);
         }
+
+        public ActionResult GetChat(int id)
+        { 
+            List<Chat> _listOfChats = _db.Chats.Where(x => x.reciever == id).ToList();
+            return PartialView("_ChatHistory",_listOfChats);
+        }
     }
 }

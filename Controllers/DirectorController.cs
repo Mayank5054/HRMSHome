@@ -190,6 +190,8 @@ namespace HRMS.Controllers
         [@Authorize(new string[] { "Director" })]
         public ActionResult AllEmployees()
         {
+
+        
             List<Employee> _emp = _db.Employees.Include("Employee2")
                 .Where(x => x.isDeleted != true)
                 .ToList();

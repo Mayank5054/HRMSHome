@@ -9,11 +9,18 @@ using System.Web.Mvc;
 using Fleck;
 using Newtonsoft.Json;
 using HRMS.Filters;
+using HRMS.Models;
+using Microsoft.Ajax.Utilities;
 namespace HRMS.Controllers
 {
     [LoginFilter]
     public class WebSocketController : Controller
     {
+        MayankEntities _db;
+       public  WebSocketController()
+        {
+            _db = new MayankEntities();
+        }
         private static Dictionary<string, IWebSocketConnection> currentUsers = new Dictionary<string, IWebSocketConnection>();
 
         public ActionResult WebSocket()
@@ -45,8 +52,14 @@ namespace HRMS.Controllers
                 socket.OnMessage = message =>
                 {
                     dynamic jsonData = JsonConvert.DeserializeObject(message);
-                    if (currentUsers[jsonData["id"].ToString()] != null)
+                    if (currentUsers.ContainsKey(jsonData["id"].ToString()) == true)
                     {
+                        Chat _chatMessage = new Chat();
+                        _chatMessage.sender = jsonData["senderId"];
+                        _chatMessage.reciever = jsonData["id"];
+                        _chatMessage.data = jsonData["message"];
+                        _db.Chats.Add(_chatMessage);
+                        _db.SaveChanges();
                         currentUsers[jsonData["id"].ToString()].Send(message);
                     }
                 };

@@ -1,0 +1,11 @@
+﻿@using HRMS.Models
+
+@model List<Chat>
+
+
+<div id="chatHistory">
+    @foreach (Chat i in Model)
+    {
+        <p>@i.Employee1.FirstName @i.Employee1.LastName :  @i.data</p>
+    }
+</div>

@@ -171,7 +171,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-body" style="height:200px;width:500px">
-                <div id="chatHistory">
+                <div id="chatHistoryDiv">
 
                 </div>
                 <input type="text" id="message" />
@@ -196,41 +196,9 @@
     });
 </script>
 <script>
-    var socket = new WebSocket("ws://localhost:5355?userId="+@userId);
+    function expandData(e, id) {
 
-    socket.onopen = function () {
-        console.log("WebSocket connected");
-    };
 
-    socket.onmessage = function (event) {
-        console.log(event);
-        jsonData = JSON.parse(event.data);
-        $.notify(`${jsonData.sender} has sended a message`,"info");
-        $("#chatHistory").append(`<p style="bg-primary" >${jsonData.sender} : ${jsonData.message}</p>`);
-        console.log("Received message: " + event.data);
-    };
-
-    socket.onclose = function () {
-        console.log("WebSocket closed");
-    };
-
-    function sendMessage(id) {
-      
-        socket.send(
-        JSON.stringify({
-             id: id,
-  sender: "@userName",
-  message: $("#message").val()
-        })
-        );
-    }
-    function openChatModel(id) {
-        $("#chatHistory").empty();
-        $("#sendMessage").attr("onclick", `sendMessage(${id})`);
-    }
-    function expandData(e,id) {
-     
-     
         $(e).css("transform", "rotate(180deg)");
         console.log();
         if ($("#table" + id).length == 0) {
@@ -242,10 +210,13 @@
                     var prepareTaskTable = "";
                     jsonData.forEach(function (i) {
                         prepareTaskTable += `
-<tr>
+<tr >
 <td> ${i.TaskDate} </td>
 <td> ${i.TaskName} </td>
 <td> ${i.TaskDescription} </td>
+<td>${i.Approver}</td>
+<td>${i.ApprovedBy}</td>
+<td>${i.ApprovedOn}</td>
 <td> ${i.Status} </td>
 </tr>
 `
@@ -254,53 +225,44 @@
 
                     console.log(tr);
                     let row = $("#tableOfEmployee").DataTable().row(tr);
-            
-                        let childTable = $(`
-                        <table class="table table-bordered table-responsive" id="table${id}">
+
+                    let childTable = $(`
+                        <table class="table " id="table${id}">
                           <thead>
                             <tr>
-                            <th>
-    Task Date
-</th>
-                              <th>
-                                  Task Name
-                              </th>
-                              <th>
-                                  Task Description
-                              </th>
-                           
-                              <th>
-                                  Status
-                              </th>
-                           
+                            <th>Task Date</th>
+                              <th>Task Name</th>
+                              <th>Task Description</th>
+                              <th>Approver</th>
+                              <th>Approved By </th>
+                              <th>Approved On </th>
+                              <th>Status</th>
                             </tr>
                           </thead>
                           <tbody>
                           ${prepareTaskTable}
                           </tbody>
-                        </table>
-                  `)
+                        </table>`);
 
+                    row.child(childTable).show();
+                    //               var boilterPlate = `
 
-                        row.child(childTable).show();
-     //               var boilterPlate = `
+                    //   <div id="div${id}" class="table-responsive container-fluid">
+                    //   <table class="table table-hover table-bodered" id="table${id}" >
+                    //   <thead>
+                    //   <tr>
+                    //   <th>Task Date</th>
+                    //   <th>Task Name</th>
+                    //   <th>Task Description</th>
+                    //   <th>Status</th>
+                    //   </tr>
+                    //   </thead>
+                    //   <tbody>
+                    //`;
 
-     //   <div id="div${id}" class="table-responsive container-fluid">
-     //   <table class="table table-hover table-bodered" id="table${id}" >
-     //   <thead>
-     //   <tr>
-     //   <th>Task Date</th>
-     //   <th>Task Name</th>
-     //   <th>Task Description</th>
-     //   <th>Status</th>
-     //   </tr>
-     //   </thead>
-     //   <tbody>
-     //`;
-                    
-     //               boilterPlate = boilterPlate + prepareTaskTable + `</tbody</table></div>`;
+                    //               boilterPlate = boilterPlate + prepareTaskTable + `</tbody</table></div>`;
 
-                 /*   $("#" + id).after(boilterPlate);*/
+                    /*   $("#" + id).after(boilterPlate);*/
                     $("#table" + id).DataTable({
                         columns: [
                             {
@@ -311,6 +273,20 @@
                             },
                             { data: "TaskName" },
                             { data: "TaskDescription" },
+                            {
+                                data: "Approver", name: "Approver"
+                            },
+                            {
+                                data: "ApprovedBy", name: "ApprovedBy", searchable: false,
+                                orderable: false
+                            },
+                            {
+                                data: "ApprovedOn",
+                                name: "ApprovedOn",
+                                render: function (data, type, row) {
+                                    return getFormattedDate(data);
+                                }
+                            },
                             {
                                 data: "Status",
                                 render: function (data, type, row) {
@@ -327,6 +303,7 @@
                                 }
                             }
                         ]
+
                     });
                     console.log(jsonData);
                 },
@@ -338,9 +315,9 @@
             console.log("hidden");
             $(e).css("transform", "rotate(0deg)");
             $('#table' + id).DataTable().destroy();
-            $("#table" + id).remove();
+            $("#" + id).next().remove();
         }
-        
+
     }
 
     function getFormattedDate(data) {
@@ -366,4 +343,50 @@
         var formattedDate = (day < 10 ? '0' : '') + day + '/' + (month < 10 ? '0' : '') + month + '/' + year;
         return formattedDate;
     }
+</script>
+<script>
+    var socket = new WebSocket("ws://localhost:5355?userId="+@userId);
+
+    socket.onopen = function () {
+        console.log("WebSocket connected");
+    };
+
+    socket.onmessage = function (event) {
+        console.log(event);
+        jsonData = JSON.parse(event.data);
+        $.notify(`${jsonData.sender} has sended a message`,"info");
+        $("#chatHistory").append(`<p style="bg-primary" >${jsonData.sender} : ${jsonData.message}</p>`);
+        console.log("Received message: " + event.data);
+    };
+
+    socket.onclose = function () {
+        console.log("WebSocket closed");
+    };
+
+    function sendMessage(id) {
+      
+        socket.send(
+        JSON.stringify({
+             id: id,
+            sender: "@userName",
+  senderId:"@userId",
+  message: $("#message").val()
+        })
+        );
+    }
+    function openChatModel(id) {
+        $.ajax({
+            method: "GET",
+            url: "/Partial/GetChat/" + id,
+            success: function (data) {
+                $("#chatHistoryDiv").append(data);
+            },
+            error: function (data) {
+
+            }
+        })
+        $("#chatHistory").empty();
+        $("#sendMessage").attr("onclick", `sendMessage(${id})`);
+    }
+    
 </script>

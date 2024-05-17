@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HRMS.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,10 +9,17 @@ namespace HRMS.Controllers
 {
     public class ChatController : Controller
     {
+        MayankEntities _db;
         // GET: Chat
+        public ChatController() { 
+        _db = new MayankEntities();
+        }
         public ActionResult Index()
         {
-            return View();
+            int userId = (int)Session["userId"];
+            List<Chat> _listOfChats = _db.Chats.Where(x=>x.reciever == userId).ToList();
+            return View(_listOfChats);
+
         }
     }
 }

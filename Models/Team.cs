@@ -24,7 +24,7 @@ namespace HRMS.Models
         public Nullable<int> TeamLeader { get; set; }
         public Nullable<System.DateTime> CreationDate { get; set; }
         public string TeamName { get; set; }
-
+    
         public virtual Employee Employee { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TeamsDetail> TeamsDetails { get; set; }

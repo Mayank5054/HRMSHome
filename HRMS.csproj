@@ -148,7 +148,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Chat.cs">
+      <DependentUpon>LoginModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Employee.cs">
+      <DependentUpon>LoginModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\getAll_Result.cs">
       <DependentUpon>LoginModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\LoginModel.Context.cs">
@@ -277,6 +283,7 @@
     <Content Include="Views\Partial\_TaskForm.cshtml" />
     <Content Include="Views\WebSocket\WebSocket.cshtml" />
     <Content Include="Views\Chat\Index.cshtml" />
+    <Content Include="Views\Partial\_ChatHistory.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

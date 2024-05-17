@@ -5,6 +5,15 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="MayankModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Chats">
+          <Key>
+            <PropertyRef Name="chatId" />
+          </Key>
+          <Property Name="chatId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="sender" Type="int" />
+          <Property Name="reciever" Type="int" />
+          <Property Name="data" Type="varchar" MaxLength="100" />
+        </EntityType>
         <EntityType Name="Employee">
           <Key>
             <PropertyRef Name="EmployeeId" />
@@ -62,6 +71,30 @@
           <Property Name="EmployeeId" Type="int" />
           <Property Name="AssignedRole" Type="varchar" MaxLength="50" />
         </EntityType>
+        <Association Name="FK__Chats__reciever__318258D2">
+          <End Role="Employee" Type="Self.Employee" Multiplicity="0..1" />
+          <End Role="Chats" Type="Self.Chats" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Employee">
+              <PropertyRef Name="EmployeeId" />
+            </Principal>
+            <Dependent Role="Chats">
+              <PropertyRef Name="reciever" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Chats__sender__308E3499">
+          <End Role="Employee" Type="Self.Employee" Multiplicity="0..1" />
+          <End Role="Chats" Type="Self.Chats" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Employee">
+              <PropertyRef Name="EmployeeId" />
+            </Principal>
+            <Dependent Role="Chats">
+              <PropertyRef Name="sender" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK__Employee__Depart__0B5CAFEA">
           <End Role="Roles" Type="Self.Roles" Multiplicity="0..1" />
           <End Role="Employee" Type="Self.Employee" Multiplicity="*" />
@@ -158,12 +191,23 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Function Name="getAll" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="RETURNSOMETHING" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <EntityContainer Name="MayankModelStoreContainer">
+          <EntitySet Name="Chats" EntityType="Self.Chats" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Employee" EntityType="Self.Employee" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Roles" EntityType="Self.Roles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tasks" EntityType="Self.Tasks" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Teams" EntityType="Self.Teams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TeamsDetails" EntityType="Self.TeamsDetails" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__Chats__reciever__318258D2" Association="Self.FK__Chats__reciever__318258D2">
+            <End Role="Employee" EntitySet="Employee" />
+            <End Role="Chats" EntitySet="Chats" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Chats__sender__308E3499" Association="Self.FK__Chats__sender__308E3499">
+            <End Role="Employee" EntitySet="Employee" />
+            <End Role="Chats" EntitySet="Chats" />
+          </AssociationSet>
           <AssociationSet Name="FK__Employee__Depart__0B5CAFEA" Association="Self.FK__Employee__Depart__0B5CAFEA">
             <End Role="Roles" EntitySet="Roles" />
             <End Role="Employee" EntitySet="Employee" />
@@ -224,6 +268,8 @@
           <Property Name="isDeleted" Type="Boolean" />
           <NavigationProperty Name="Teams" Relationship="MayankModel.FK__Teams__TeamLeade__15DA3E5D" FromRole="Employee" ToRole="Team" />
           <NavigationProperty Name="TeamsDetails" Relationship="MayankModel.FK__TeamsDeat__Emplo__19AACF411" FromRole="Employee" ToRole="TeamsDetail" />
+          <NavigationProperty Name="Chats" Relationship="MayankModel.FK__Chats__reciever__318258D2" FromRole="Employee" ToRole="Chat" />
+          <NavigationProperty Name="Chats1" Relationship="MayankModel.FK__Chats__sender__308E3499" FromRole="Employee" ToRole="Chat" />
         </EntityType>
         <EntityType Name="Role">
           <Key>
@@ -350,6 +396,17 @@
             <End Role="Team" EntitySet="Teams" />
             <End Role="TeamsDetail" EntitySet="TeamsDetails" />
           </AssociationSet>
+          <FunctionImport Name="getAll" ReturnType="Collection(MayankModel.getAll_Result)" />
+          <FunctionImport Name="RETURNSOMETHING" ReturnType="Collection(Int32)" />
+          <EntitySet Name="Chats" EntityType="MayankModel.Chat" />
+          <AssociationSet Name="FK__Chats__reciever__318258D2" Association="MayankModel.FK__Chats__reciever__318258D2">
+            <End Role="Employee" EntitySet="Employees" />
+            <End Role="Chat" EntitySet="Chats" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Chats__sender__308E3499" Association="MayankModel.FK__Chats__sender__308E3499">
+            <End Role="Employee" EntitySet="Employees" />
+            <End Role="Chat" EntitySet="Chats" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Team">
           <Key>
@@ -406,6 +463,54 @@
             </Principal>
             <Dependent Role="TeamsDetail">
               <PropertyRef Name="TeamId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <ComplexType Name="getAll_Result">
+          <Property Type="Int32" Name="TaskId" Nullable="false" />
+          <Property Type="DateTime" Name="TaskDate" Nullable="true" />
+          <Property Type="Int32" Name="EmployeeId" Nullable="true" />
+          <Property Type="String" Name="TaskName" Nullable="true" MaxLength="30" />
+          <Property Type="String" Name="TaskDescription" Nullable="true" MaxLength="300" />
+          <Property Type="Int32" Name="ApproverID" Nullable="true" />
+          <Property Type="Int32" Name="ApprovedORRejectedBy" Nullable="true" />
+          <Property Type="DateTime" Name="ApprovedORRejectedOn" Nullable="true" />
+          <Property Type="String" Name="Status" Nullable="true" MaxLength="50" />
+          <Property Type="DateTime" Name="CreatedOn" Nullable="true" />
+          <Property Type="DateTime" Name="ModifiedOn" Nullable="true" />
+        </ComplexType>
+        <EntityType Name="Chat">
+          <Key>
+            <PropertyRef Name="chatId" />
+          </Key>
+          <Property Name="chatId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="sender" Type="Int32" />
+          <Property Name="reciever" Type="Int32" />
+          <Property Name="data" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Employee" Relationship="MayankModel.FK__Chats__reciever__318258D2" FromRole="Chat" ToRole="Employee" />
+          <NavigationProperty Name="Employee1" Relationship="MayankModel.FK__Chats__sender__308E3499" FromRole="Chat" ToRole="Employee" />
+        </EntityType>
+        <Association Name="FK__Chats__reciever__318258D2">
+          <End Type="MayankModel.Employee" Role="Employee" Multiplicity="0..1" />
+          <End Type="MayankModel.Chat" Role="Chat" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Employee">
+              <PropertyRef Name="EmployeeId" />
+            </Principal>
+            <Dependent Role="Chat">
+              <PropertyRef Name="reciever" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Chats__sender__308E3499">
+          <End Type="MayankModel.Employee" Role="Employee" Multiplicity="0..1" />
+          <End Type="MayankModel.Chat" Role="Chat" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Employee">
+              <PropertyRef Name="EmployeeId" />
+            </Principal>
+            <Dependent Role="Chat">
+              <PropertyRef Name="sender" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -474,6 +579,34 @@
                 <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
                 <ScalarProperty Name="TeamId" ColumnName="TeamId" />
                 <ScalarProperty Name="TeamMemberId" ColumnName="TeamMemberId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="getAll" FunctionName="MayankModel.Store.getAll">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="MayankModel.getAll_Result">
+                <ScalarProperty Name="TaskId" ColumnName="TaskId" />
+                <ScalarProperty Name="TaskDate" ColumnName="TaskDate" />
+                <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
+                <ScalarProperty Name="TaskName" ColumnName="TaskName" />
+                <ScalarProperty Name="TaskDescription" ColumnName="TaskDescription" />
+                <ScalarProperty Name="ApproverID" ColumnName="ApproverID" />
+                <ScalarProperty Name="ApprovedORRejectedBy" ColumnName="ApprovedORRejectedBy" />
+                <ScalarProperty Name="ApprovedORRejectedOn" ColumnName="ApprovedORRejectedOn" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="ModifiedOn" ColumnName="ModifiedOn" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="RETURNSOMETHING" FunctionName="MayankModel.Store.RETURNSOMETHING" />
+          <EntitySetMapping Name="Chats">
+            <EntityTypeMapping TypeName="MayankModel.Chat">
+              <MappingFragment StoreEntitySet="Chats">
+                <ScalarProperty Name="data" ColumnName="data" />
+                <ScalarProperty Name="reciever" ColumnName="reciever" />
+                <ScalarProperty Name="sender" ColumnName="sender" />
+                <ScalarProperty Name="chatId" ColumnName="chatId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

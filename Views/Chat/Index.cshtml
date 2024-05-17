@@ -1,15 +1,19 @@
-﻿<h3>Welcome To Chat Page</h3>
+﻿@using HRMS.Models;
+@model List<Chat>
+<h3>Welcome To Chat Page</h3>
 @{ 
     int userId = int.Parse(Session["userId"].ToString());
     string userName = (string)Session["userName"];
 }
 <div id="chatHistory">
-
+    @foreach (Chat i in Model)
+    {
+        <p>@i.Employee1.FirstName @i.Employee1.LastName :  @i.data</p>
+    }
 </div>
 <input type="text" id="message" />
 
 <button id="sendMessage" onclick="sendMessage()">Send</button>
-
 <script>
     var socket = new WebSocket("ws://localhost:5355?userId="+@userId);
 
