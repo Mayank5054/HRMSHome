@@ -170,7 +170,7 @@
 <div class="modal" id="chatModel">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-body" style="height:200px;width:500px">
+            <div class="modal-body" style="min-height:200px;width:500px">
                 <div id="chatHistoryDiv">
 
                 </div>
@@ -364,17 +364,19 @@
     };
 
     function sendMessage(id) {
-      
+        const message = $("#message").val();
+        $("#chatHistory").append(`<p style="bg-primary" > @userName : ${message}</p>`);
         socket.send(
         JSON.stringify({
              id: id,
             sender: "@userName",
   senderId:"@userId",
-  message: $("#message").val()
+            message: message
         })
         );
     }
     function openChatModel(id) {
+        $("#chatHistory").empty();
         $.ajax({
             method: "GET",
             url: "/Partial/GetChat/" + id,
@@ -385,8 +387,7 @@
 
             }
         })
-        $("#chatHistory").empty();
         $("#sendMessage").attr("onclick", `sendMessage(${id})`);
     }
-    
+
 </script>

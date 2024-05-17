@@ -29,7 +29,7 @@ namespace HRMS.Controllers
 
         public ActionResult GetChat(int id)
         { 
-            List<Chat> _listOfChats = _db.Chats.Where(x => x.reciever == id).ToList();
+            List<Chat> _listOfChats = _db.Chats.Where(x => (x.reciever == id || x.sender == id)).ToList();
             return PartialView("_ChatHistory",_listOfChats);
         }
     }

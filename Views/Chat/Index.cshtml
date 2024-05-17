@@ -34,10 +34,14 @@
 
     function sendMessage() {
         /*       var message = document.getElementById("messageInput").value;*/
+        const message = $("#message").val();
+        $("#chatHistory").append(`<p style="bg-primary" > @userName : ${message}</p>`);
         socket.send(
         JSON.stringify({
             id: 1,
-            sender:"@userName",
+            sender: "@userName",
+            senderId: "@userId",
+            reciever:"Mayank Sheladiya",
             message: $("#message").val()
         })
         );

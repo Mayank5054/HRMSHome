@@ -17,7 +17,7 @@ namespace HRMS.Controllers
         public ActionResult Index()
         {
             int userId = (int)Session["userId"];
-            List<Chat> _listOfChats = _db.Chats.Where(x=>x.reciever == userId).ToList();
+            List<Chat> _listOfChats = _db.Chats.Where(x=> (x.reciever == userId || x.sender == userId)).ToList();
             return View(_listOfChats);
 
         }
