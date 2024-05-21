@@ -39,9 +39,9 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
-                <div id="loadDiv" class="bg-dark" style="height:100vh;width:100vw;position:fixed;">
+                @*<div id="loadDiv" class="bg-dark" style="height:100vh;width:100vw;position:fixed;">
                     Loading ...
-                </div>
+                </div>*@
                 <ul class="navbar-nav flex-grow-1">
                     @{
                         if (Session["Role"] != null && Session["Role"].ToString() == "Director")
@@ -92,7 +92,7 @@
     @RenderSection("scripts", required: false)
 </body>
 </html>
-<script>
+@*<script>
     document.onreadystatechange = function (data) {
         if (document.readyState != "complete") {
             $("#loadDiv").css("display", "block");
@@ -102,4 +102,14 @@
         }
         console.log(document.readyState);
     }
-</script>
+
+    document.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+    })
+    document.addEventListener("keydown", (e) => {
+        if (e.code == "F12") {
+            e.preventDefault();
+        }
+        
+    })
+</script>*@

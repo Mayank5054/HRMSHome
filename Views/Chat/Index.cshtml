@@ -6,14 +6,23 @@
     string userName = (string)Session["userName"];
 }
 <div id="chatHistory">
-    @foreach (Chat i in Model)
+    @if (Model != null)
     {
-        <p>@i.Employee1.FirstName @i.Employee1.LastName :  @i.data</p>
+        foreach (Chat i in Model)
+        {
+            <div>
+                <p class="p-3 " style="text-align: @(i.Employee1.EmployeeId == userId ? "right" : "left") "><b>@i.Employee1.FirstName @i.Employee1.LastName :</b>  @i.data</p>
+            </div>
+
+        }
     }
 </div>
-<input type="text" id="message" />
+<div class="d-flex">
+    <input type="text" id="message" class="form-control" />
 
-<button id="sendMessage" onclick="sendMessage()">Send</button>
+    <button id="sendMessage" class="btn btn-primary ms-4" onclick="sendMessage()">Send</button>
+</div>
+
 <script>
     var socket = new WebSocket("ws://localhost:5355?userId="+@userId);
 
@@ -24,7 +33,11 @@
     socket.onmessage = function (event) {
         console.log(event);
         jsonData = JSON.parse(event.data);
-        $("#chatHistory").append(`<p style="bg-primary" >${jsonData.sender} : ${jsonData.message}</p>`);
+    
+        $("#chatHistory").append(`
+                <div>
+    <p class="p-3 " style="text-align:left  "><b> ${jsonData.sender} :</b > ${jsonData.message}</p>
+</div>`);
         console.log("Received message: " + event.data);
     };
 
@@ -35,7 +48,13 @@
     function sendMessage() {
         /*       var message = document.getElementById("messageInput").value;*/
         const message = $("#message").val();
-        $("#chatHistory").append(`<p style="bg-primary" > @userName : ${message}</p>`);
+       
+
+                $("#chatHistory").append(`
+        <div>
+    <p class="p-3 " style="text-align:right  "><b> @userName :</b>   ${message}</p>
+</div>
+        `);
         socket.send(
         JSON.stringify({
             id: 1,
@@ -46,5 +65,5 @@
         })
         );
     }
-  
+
 </script>
