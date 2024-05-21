@@ -31,6 +31,14 @@
             processData: false,
             contentType:false,
             success: function (data) {
+                if (data.status == "Success") {
+                    document.cookie = `jwtToken=${data.AuthenticationToken}; `;
+                    window.location.href = "http://localhost:5354/JWT/GetTask";
+                    localStorage.setItem("Authentication-Token", data.AuthenticationToken);
+                }
+                else {
+                  /*  $.notify(data.message, "error");*/
+                }
                 console.log(data);
             },
             error: function (data) {

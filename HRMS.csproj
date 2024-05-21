@@ -188,6 +188,7 @@
     <Compile Include="ExtendedModels\Team.cs" />
     <Compile Include="ExtendedModels\TeamsDetail.cs" />
     <Compile Include="Filters\Authorize.cs" />
+    <Compile Include="Filters\JWTLoginFilter.cs" />
     <Compile Include="Filters\LoginFilter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -201,6 +202,7 @@
     <Compile Include="Models\getAll_Result.cs">
       <DependentUpon>LoginModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\JWTModel.cs" />
     <Compile Include="Models\LoginModel.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -236,6 +238,7 @@
       <DependentUpon>Resource.Hi.resx</DependentUpon>
     </Compile>
     <Compile Include="Security\EncryptionHelper.cs" />
+    <Compile Include="Security\JWT.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-grid.css" />
@@ -329,6 +332,8 @@
     <Content Include="Views\Chat\Index.cshtml" />
     <Content Include="Views\Partial\_ChatHistory.cshtml" />
     <Content Include="Views\JWT\Login.cshtml" />
+    <Content Include="Views\JWT\GetTask.cshtml" />
+    <Content Include="Views\JWT\AddTask.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

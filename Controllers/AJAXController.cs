@@ -1,7 +1,10 @@
 ﻿using HRMS.Models;
+using HRMS.Security;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Web;
@@ -435,6 +438,7 @@ namespace HRMS.Controllers
 
         public ActionResult HandleApproveDataTable()
         {
+
             int userId = int.Parse(Session["userId"].ToString());
             int roleId = int.Parse(Session["RoleId"].ToString());
             int draw = Convert.ToInt32(Request["draw"]);
@@ -460,8 +464,8 @@ namespace HRMS.Controllers
             if (!string.IsNullOrEmpty(searchValue))
             {
                 data = data.Where(x =>
-                (x.Employee1.FirstName + " " + x.Employee1.LastName).Contains(searchValue) &&
-                (x.Employee.FirstName + " " + x.Employee.LastName).Contains(searchValue) &&
+                (x.Employee1.FirstName + " " + x.Employee1.LastName).Contains(searchValue) ||
+                (x.Employee.FirstName + " " + x.Employee.LastName).Contains(searchValue) ||
                 (x.Employee2.FirstName + " " + x.Employee2.LastName).Contains(searchValue)
                 );
             }
@@ -571,13 +575,7 @@ namespace HRMS.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
   
-private object GetPropertyValue(object obj, string propertyName)
 
-        {
-
-            return obj.GetType().GetProperty(propertyName)?.GetValue(obj, null);
-
-        }
 
         public ActionResult GetTaskByEmployeeId(int id)
         {
