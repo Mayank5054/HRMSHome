@@ -33,12 +33,24 @@
     socket.onmessage = function (event) {
         console.log(event);
         jsonData = JSON.parse(event.data);
-    
-        $("#chatHistory").append(`
+        console.log(event);
+        jsonData = JSON.parse(event.data);
+        if (jsonData.operation == "userGetsOnline") {
+            $("#" + jsonData.userId).find("#isOnline").css("background", "green");
+
+        }
+        if (jsonData.operation == "userGetsOffline") {
+            $("#" + jsonData.userId).find("#isOnline").css("background", "red");
+
+        }
+        else {
+            $("#chatHistory").append(`
                 <div>
     <p class="p-3 " style="text-align:left  "><b> ${jsonData.sender} :</b > ${jsonData.message}</p>
 </div>`);
-        console.log("Received message: " + event.data);
+            console.log("Received message: " + event.data);
+        }
+        
     };
 
     socket.onclose = function () {

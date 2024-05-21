@@ -30,7 +30,7 @@ namespace HRMS.Controllers
 
         public void StartWebSocket()
         {
-          
+            
             var server = new WebSocketServer("ws://0.0.0.0:5355");
             server.Start(socket =>
             {
@@ -39,6 +39,13 @@ namespace HRMS.Controllers
                     var userId = socket.ConnectionInfo.Path.Split('=')[1];
                     if (!currentUsers.ContainsKey(userId))
                     {
+                        Employee _emp = _db.Employees.Where(x => x.EmployeeId.ToString() == userId).FirstOrDefault();
+                        _emp.isOnline = true;
+                        _db.SaveChanges();
+                        foreach (var item in currentUsers)
+                        {
+                        item.Value.Send(JsonConvert.SerializeObject(new{operation="userGetsOnline",userId=userId }));
+                        }
                         Console.Write("Connection Open");
                         currentUsers.Add(userId, socket);
                     }
@@ -46,7 +53,13 @@ namespace HRMS.Controllers
                 socket.OnClose = () =>
                 {
                     var userId = socket.ConnectionInfo.Path.Split('=')[1];
-                  
+                    Employee _emp = _db.Employees.Where(x => x.EmployeeId.ToString() == userId).FirstOrDefault();
+                    _emp.isOnline = false;
+                    _db.SaveChanges();
+                    foreach (var item in currentUsers)
+                    {
+                        item.Value.Send(JsonConvert.SerializeObject(new { operation = "userGetsOffline", userId = userId }));
+                    }
                     currentUsers.Remove(userId);
                 };
                 socket.OnMessage = message =>

@@ -89,6 +89,7 @@
 <table class="table table-bordered" id="tableOfEmployee">
     <thead>
         <tr>
+            <th>Online</th>
             <th>Expand</th>
             <th>Employee Name</th>
             <th>Birth-date</th>
@@ -109,6 +110,9 @@
         @foreach (Employee i in Model)
         {
             <tr id="@i.EmployeeId">
+                <td><div id="isOnline" style="height:20px;width:20px;border-radius:100%;background:@(i.isOnline==true ? "green":"red")">
+                    
+                    </div></td>
                 <td><button class="btn btn-circle btn-danger" onclick="expandData(this,@i.EmployeeId)">^</button></td>
 
                 <td>@i.FirstName @i.LastName</td>
@@ -186,7 +190,8 @@
 </div>
 <script>
    $("#tableOfEmployee").DataTable({
-        columns: [
+       columns: [
+           {data:""},
             { data: "Expand" },
             { data: "EmployeeName" },
             { data: "BirthDate" },
@@ -358,13 +363,24 @@
     socket.onmessage = function (event) {
         console.log(event);
         jsonData = JSON.parse(event.data);
-        $.notify(`${jsonData.sender} has sended a message`,"info");
-        $("#chatHistory").append(`
+        if (jsonData.operation == "userGetsOnline") {
+            $("#" + jsonData.userId).find("#isOnline").css("background", "green");
+           
+        }
+        if (jsonData.operation == "userGetsOffline") {
+            $("#" + jsonData.userId).find("#isOnline").css("background", "red");
+     
+        }
+        else {
+            $.notify(`${jsonData.sender} has sended a message`, "info");
+            $("#chatHistory").append(`
                 <div>
-    <p class="p-3 " style="text-align:left  "><b> ${jsonData.sender} :</b > ${ jsonData.message }</p>
+    <p class="p-3 " style="text-align:left  "><b> ${jsonData.sender} :</b > ${jsonData.message}</p>
 </div>`);
-        
-        console.log("Received message: " + event.data);
+
+            console.log("Received message: " + event.data);
+        }
+       
     };
 
     socket.onclose = function () {

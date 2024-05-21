@@ -13,7 +13,7 @@ namespace HRMS.Security
     public class JWT
     {
         private static string SecretKey = System.Configuration.ConfigurationManager.AppSettings["JWTKey"];
-        public static string GenerateJWTToken(object _obj)
+        public static string GenerateJWTToken(object  _obj)
         {
             var key = Encoding.ASCII.GetBytes(SecretKey);
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -22,13 +22,15 @@ namespace HRMS.Security
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, json)
+                    new Claim(ClaimTypes.Name, json),
                 }),
+                Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
                 Issuer = "http://localhost",
                 Audience = "http://localhost"
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
+ 
             return tokenHandler.WriteToken(token);
         }
 
@@ -44,6 +46,7 @@ namespace HRMS.Security
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
+                    ValidateLifetime = true,
                     ValidIssuer = "http://localhost",
                     ValidAudience = "http://localhost",
                     IssuerSigningKey = new SymmetricSecurityKey(key)

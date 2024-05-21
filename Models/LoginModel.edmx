@@ -29,6 +29,7 @@
           <Property Name="DepartmentId" Type="int" />
           <Property Name="ReportingPerson" Type="int" />
           <Property Name="isDeleted" Type="bit" />
+          <Property Name="isOnline" Type="bit" />
         </EntityType>
         <EntityType Name="Roles">
           <Key>
@@ -270,6 +271,7 @@
           <NavigationProperty Name="TeamsDetails" Relationship="MayankModel.FK__TeamsDeat__Emplo__19AACF411" FromRole="Employee" ToRole="TeamsDetail" />
           <NavigationProperty Name="Chats" Relationship="MayankModel.FK__Chats__reciever__318258D2" FromRole="Employee" ToRole="Chat" />
           <NavigationProperty Name="Chats1" Relationship="MayankModel.FK__Chats__sender__308E3499" FromRole="Employee" ToRole="Chat" />
+          <Property Name="isOnline" Type="Boolean" />
         </EntityType>
         <EntityType Name="Role">
           <Key>
@@ -523,6 +525,7 @@
           <EntitySetMapping Name="Employees">
             <EntityTypeMapping TypeName="MayankModel.Employee">
               <MappingFragment StoreEntitySet="Employee">
+                <ScalarProperty Name="isOnline" ColumnName="isOnline" />
                 <ScalarProperty Name="isDeleted" ColumnName="isDeleted" />
                 <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
                 <ScalarProperty Name="EmployeeCode" ColumnName="EmployeeCode" />

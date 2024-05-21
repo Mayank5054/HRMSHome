@@ -55,6 +55,7 @@ namespace HRMS.Controllers
         [JWTLoginFilter]
         public ActionResult GetTask()
         {
+            
             var tokenHandler = new JwtSecurityTokenHandler();
             var jwtToken = tokenHandler.ReadJwtToken(Request.Cookies["jwtToken"].Value);
             string _jy = JWT.Base64UrlDecode(jwtToken.EncodedPayload);
@@ -109,10 +110,11 @@ namespace HRMS.Controllers
             return Json(new { });
         }
 
-
+        [JWTLoginFilter]
+        [HttpPost]
         public ActionResult HandleApproveDataTable()
         {
-
+           
             var tokenHandler = new JwtSecurityTokenHandler();
             var jwtToken = tokenHandler.ReadJwtToken(Request.Cookies["jwtToken"].Value);
             string _jy = JWT.Base64UrlDecode(jwtToken.EncodedPayload);
@@ -122,6 +124,7 @@ namespace HRMS.Controllers
             string email = (string)_ja2["Email"];
             int roleId = (int)_ja2["RoleId"];
             int userId = (int)_ja2["userId"];
+       
 
             int draw = Convert.ToInt32(Request["draw"]);
             int start = Convert.ToInt32(Request["start"]);
