@@ -1,14 +1,27 @@
 ﻿@using HRMS.Models;
-@model List<Chat>
+@model ChatExtended
 <h3>Welcome To Chat Page</h3>
 @{ 
     int userId = int.Parse(Session["userId"].ToString());
     string userName = (string)Session["userName"];
+    
 }
 <div id="chatHistory">
     @if (Model != null)
     {
-        foreach (Chat i in Model)
+        foreach (Chat i in Model.listOfSeenChats)
+        {
+            <div>
+                <p class="p-3 " style="text-align: @(i.Employee1.EmployeeId == userId ? "right" : "left") "><b>@i.Employee1.FirstName @i.Employee1.LastName :</b>  @i.data</p>
+            </div>
+
+        }
+
+        if (Model.listOfUsSeenChats.Count != 0)
+        {
+            <p class="bg-green" id="newMessage">new messages</p>
+        }
+        foreach (Chat i in Model.listOfUsSeenChats)
         {
             <div>
                 <p class="p-3 " style="text-align: @(i.Employee1.EmployeeId == userId ? "right" : "left") "><b>@i.Employee1.FirstName @i.Employee1.LastName :</b>  @i.data</p>
@@ -31,6 +44,7 @@
     };
 
     socket.onmessage = function (event) {
+        $("#newMessage").css("display", "block");
         console.log(event);
         jsonData = JSON.parse(event.data);
         console.log(event);
@@ -58,6 +72,7 @@
     };
 
     function sendMessage() {
+        $("#newMessage").css("display", "none");
         /*       var message = document.getElementById("messageInput").value;*/
         const message = $("#message").val();
        

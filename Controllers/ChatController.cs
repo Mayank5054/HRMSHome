@@ -20,8 +20,21 @@ namespace HRMS.Controllers
         public ActionResult Index()
         {
             int userId = (int)Session["userId"];
-            List<Chat> _listOfChats = _db.Chats.Where(x=> (x.reciever == userId || x.sender == userId)).ToList();
-            return View(_listOfChats);
+            ChatExtended _ce = new ChatExtended
+            {
+                listOfSeenChats = _db.Chats.Where(x => ((x.reciever == userId || x.sender == userId) && (x.isQueued == null))).ToList(),
+                listOfUsSeenChats = _db.Chats.Where(x => ((x.reciever == userId || x.sender == userId) && (x.isQueued == 1))).ToList()
+            };
+
+   
+                foreach(Chat i in _ce.listOfUsSeenChats)
+            {
+                i.isQueued = 0;
+                i.delivered = DateTime.UtcNow;
+                i.seen = DateTime.UtcNow;
+            }
+                _db.SaveChanges();
+            return View(_ce);
 
         }
     }

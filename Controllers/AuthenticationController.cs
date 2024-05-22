@@ -81,10 +81,13 @@ namespace HRMS.Controllers
 
         public ActionResult Logout()
         {
+
             Session["userName"] = null;
             Session["Role"] = null;
             Session["userId"] = null;
             Session["ReportingPersonId"] = null;
+
+            
             return RedirectToAction("Login", "Authentication");
         }
         public ActionResult Error404()

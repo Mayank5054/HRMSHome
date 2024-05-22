@@ -13,6 +13,9 @@
           <Property Name="sender" Type="int" />
           <Property Name="reciever" Type="int" />
           <Property Name="data" Type="varchar" MaxLength="100" />
+          <Property Name="isQueued" Type="int" />
+          <Property Name="seen" Type="date" />
+          <Property Name="delivered" Type="date" />
         </EntityType>
         <EntityType Name="Employee">
           <Key>
@@ -491,6 +494,9 @@
           <Property Name="data" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Employee" Relationship="MayankModel.FK__Chats__reciever__318258D2" FromRole="Chat" ToRole="Employee" />
           <NavigationProperty Name="Employee1" Relationship="MayankModel.FK__Chats__sender__308E3499" FromRole="Chat" ToRole="Employee" />
+          <Property Name="isQueued" Type="Int32" />
+          <Property Name="seen" Type="DateTime" Precision="0" />
+          <Property Name="delivered" Type="DateTime" Precision="0" />
         </EntityType>
         <Association Name="FK__Chats__reciever__318258D2">
           <End Type="MayankModel.Employee" Role="Employee" Multiplicity="0..1" />
@@ -606,6 +612,9 @@
           <EntitySetMapping Name="Chats">
             <EntityTypeMapping TypeName="MayankModel.Chat">
               <MappingFragment StoreEntitySet="Chats">
+                <ScalarProperty Name="delivered" ColumnName="delivered" />
+                <ScalarProperty Name="seen" ColumnName="seen" />
+                <ScalarProperty Name="isQueued" ColumnName="isQueued" />
                 <ScalarProperty Name="data" ColumnName="data" />
                 <ScalarProperty Name="reciever" ColumnName="reciever" />
                 <ScalarProperty Name="sender" ColumnName="sender" />

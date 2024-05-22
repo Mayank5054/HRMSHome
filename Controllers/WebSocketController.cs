@@ -28,6 +28,19 @@ namespace HRMS.Controllers
             return View();
         }
 
+        public void closeConnection(int id)
+        {
+            //var userId = socket.ConnectionInfo.Path.Split('=')[1];
+            Employee _emp = _db.Employees.Where(x => x.EmployeeId == id).FirstOrDefault();
+            _emp.isOnline = false;
+            _db.SaveChanges();
+            foreach (var item in currentUsers)
+            {
+                item.Value.Send(JsonConvert.SerializeObject(new { operation = "userGetsOffline", userId = id }));
+            }
+            currentUsers[id.ToString()].Close();
+            currentUsers.Remove(id.ToString());
+        }
         public void StartWebSocket()
         {
             
@@ -60,7 +73,9 @@ namespace HRMS.Controllers
                     {
                         item.Value.Send(JsonConvert.SerializeObject(new { operation = "userGetsOffline", userId = userId }));
                     }
+                    currentUsers[userId.ToString()].Close();
                     currentUsers.Remove(userId);
+              
                 };
                 socket.OnMessage = message =>
                 {
@@ -71,12 +86,27 @@ namespace HRMS.Controllers
                         _chatMessage.sender = jsonData["senderId"];
                         _chatMessage.reciever = jsonData["id"];
                         _chatMessage.data = jsonData["message"];
+                        _chatMessage.isQueued = 0;
+                        _chatMessage.delivered = DateTime.UtcNow;
+                        _chatMessage.seen = null;
                         _db.Chats.Add(_chatMessage);
                         _db.SaveChanges();
                         currentUsers[jsonData["id"].ToString()].Send(message);
                     }
+                    else
+                    {
+                        Chat _chatMessage = new Chat();
+                        _chatMessage.sender = jsonData["senderId"];
+                        _chatMessage.reciever = jsonData["id"];
+                        _chatMessage.data = jsonData["message"];
+                        _chatMessage.isQueued = 1;
+                        _chatMessage.delivered = null;
+                        _chatMessage.seen = null;
+                        _db.Chats.Add(_chatMessage);
+                        _db.SaveChanges();
+                 
+                    }
                 };
-               
             });
         }
     }

@@ -196,6 +196,7 @@
     <Compile Include="Models\Chat.cs">
       <DependentUpon>LoginModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ChatExtended.cs" />
     <Compile Include="Models\Employee.cs">
       <DependentUpon>LoginModel.tt</DependentUpon>
     </Compile>

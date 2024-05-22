@@ -18,6 +18,9 @@ namespace HRMS.Models
         public Nullable<int> sender { get; set; }
         public Nullable<int> reciever { get; set; }
         public string data { get; set; }
+        public Nullable<int> isQueued { get; set; }
+        public Nullable<System.DateTime> seen { get; set; }
+        public Nullable<System.DateTime> delivered { get; set; }
     
         public virtual Employee Employee { get; set; }
         public virtual Employee Employee1 { get; set; }
