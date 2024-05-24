@@ -27,7 +27,14 @@ namespace HRMS.Controllers
         {
             return View();
         }
-
+        public static  void NotifyOffine(int id)
+        {
+            foreach (var item in currentUsers)
+            {
+                item.Value.Send(JsonConvert.SerializeObject(new { operation = "userGetsOffline", userId = id }));
+            }
+          
+        }
         public void closeConnection(int id)
         {
             //var userId = socket.ConnectionInfo.Path.Split('=')[1];

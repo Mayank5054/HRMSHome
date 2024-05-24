@@ -81,13 +81,16 @@ namespace HRMS.Controllers
 
         public ActionResult Logout()
         {
-
+            int EmployeeId = (int)Session["userId"];
+            Employee _emp = _db.Employees.Where(x => x.EmployeeId == EmployeeId).FirstOrDefault();
+            _emp.isOnline = false;
+            _db.SaveChanges();
             Session["userName"] = null;
             Session["Role"] = null;
             Session["userId"] = null;
             Session["ReportingPersonId"] = null;
 
-            
+            WebSocketController.NotifyOffine(EmployeeId);
             return RedirectToAction("Login", "Authentication");
         }
         public ActionResult Error404()
