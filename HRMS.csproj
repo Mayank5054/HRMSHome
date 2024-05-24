@@ -178,6 +178,7 @@
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\ChatController.cs" />
     <Compile Include="Controllers\DirectorController.cs" />
+    <Compile Include="Controllers\FunController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\JWTController.cs" />
     <Compile Include="Controllers\PartialController.cs" />
@@ -200,6 +201,7 @@
     <Compile Include="Models\Employee.cs">
       <DependentUpon>LoginModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\fun.cs" />
     <Compile Include="Models\getAll_Result.cs">
       <DependentUpon>LoginModel.tt</DependentUpon>
     </Compile>
@@ -335,6 +337,7 @@
     <Content Include="Views\JWT\Login.cshtml" />
     <Content Include="Views\JWT\GetTask.cshtml" />
     <Content Include="Views\JWT\AddTask.cshtml" />
+    <Content Include="Views\Fun\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

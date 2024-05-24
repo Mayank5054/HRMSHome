@@ -1,0 +1,232 @@
+﻿@*@model QuizComputation.Model.CustomModel.QuestionModel
+@{
+    Layout = "~/Views/Shared/_LayoutAdminPage.cshtml";
+}*@
+<div class="card mt-3 ">
+    <h5 class="card-header">Add Question</h5>
+    <div class="card-body ">
+        <form method="post" class="was-validated" id="addQuestion">
+            <div class="card  justify-content-center question-container mb-5 ">
+                <div class="card-body que p-2  w-50 mx-auto" id="que">
+                    <div class="form-group">
+                        <label class="form-check-label">Question 1</label>
+
+                        <input type="text" name="question" id="question"/>
+                        <div class="invalid-feedback">
+                            Please enter Question.
+                        </div>
+                        <div class="valid-feedback">
+                            Looks good !
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+             
+                                <input type="text" name="option1" id="option1" />
+                                <div class="invalid-feedback">
+                                    Please enter option Text.
+                                </div>
+                                <div class="valid-feedback">
+                                    Looks good !
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                           
+                                <input type="text" name="option2" id="option2" />
+                                <div class="invalid-feedback">
+                                    Please enter option Text.
+                                </div>
+                                <div class="valid-feedback">
+                                    Looks good !
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">
+                            
+                                <input type="text" name="option3" id="option3" />
+                                <div class="invalid-feedback">
+                                    Please enter option Text.
+                                </div>
+                                <div class="valid-feedback">
+                                    Looks good !
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+          
+                                <input type="text" name="option4" id="option4" />
+                                <div class="invalid-feedback">
+                                    Please enter option Text.
+                                </div>
+                                <div class="valid-feedback">
+                                    Looks good !
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                    
+                        <select class="form-select form-control selectionList" id="selectionList">
+                            <option selected hidden>Choose correct answer</option>
+                            <option value="1">Option 1</option>
+                            <option value="2">Option 2</option>
+                            <option value="3">Option 3</option>
+                            <option value="4">Option 4</option>
+                        </select>
+                        <div class="invalid-feedback">
+                            Please select answer.
+                        </div>
+                        <div class="valid-feedback">
+                            Looks good !
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="button" id="add-question-btn" class="btn btn-primary" onclick="AddQuestion()">Add Question</button>
+            <button type="submit" id="submit-btn" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    var QuestionIndex = 2;
+    function AddQuestion() {
+        if (QuestionIndex < 6) {
+        var QuestionHTML = `<div class="card-body que p-2  w-50 mx-auto" id="que">
+    <div class="form-group">
+        <label class="form-check-label">Question 1</label>
+
+        <input type="text" name="question" id="question"/>
+        <div class="invalid-feedback">
+            Please enter Question.
+        </div>
+        <div class="valid-feedback">
+            Looks good !
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <div class="form-group">
+
+                <input type="text" name="option1" id="option1" />
+                <div class="invalid-feedback">
+                    Please enter option Text.
+                </div>
+                <div class="valid-feedback">
+                    Looks good !
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="form-group">
+
+                <input type="text" name="option2" id="option2" />
+                <div class="invalid-feedback">
+                    Please enter option Text.
+                </div>
+                <div class="valid-feedback">
+                    Looks good !
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <div class="form-group">
+
+                <input type="text" name="option3" id="option3" />
+                <div class="invalid-feedback">
+                    Please enter option Text.
+                </div>
+                <div class="valid-feedback">
+                    Looks good !
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="form-group">
+
+                <input type="text" name="option4" id="option4" />
+                <div class="invalid-feedback">
+                    Please enter option Text.
+                </div>
+                <div class="valid-feedback">
+                    Looks good !
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+
+        <select class="form-select form-control selectionList" id="selectionList">
+            <option selected hidden>Choose correct answer</option>
+            <option value="1">Option 1</option>
+            <option value="2">Option 2</option>
+            <option value="3">Option 3</option>
+            <option value="4">Option 4</option>
+        </select>
+        <div class="invalid-feedback">
+            Please select answer.
+        </div>
+        <div class="valid-feedback">
+            Looks good !
+        </div>
+    </div>
+</div>`
+
+            $('.question-container').append(QuestionHTML);
+            QuestionIndex++;
+
+
+            if (QuestionIndex == 6) {
+                $("#add-question-btn").prop("disabled", true);
+            }
+        }
+    }
+</script>
+<script>
+    $(document).on("submit", '#addQuestion', function (e) {
+
+        e.preventDefault();
+        var data1 = []
+        var data = $(".que");
+        console.log(data);
+        for (let i of data) {
+            console.log(i);
+            var obj = {
+                question: $(i).find("#question").val(),
+                option1: $(i).find("#option1").val(),
+                option2: $(i).find("#option2").val(),
+                option3: $(i).find("#option3").val(),
+                option4: $(i).find("#option4").val(),
+                answer: $(i).find("#selectionList").val(),
+            }
+
+            data1.push(obj);
+        }
+
+        $.ajax({
+            method: "POST",
+            url: "/Fun/Index",
+            data: JSON.stringify(data1),
+            processData: true,
+            contentType: "application/json;charset=utf-8",
+            success: function(data){
+                console.log(data);
+        },
+            error: function () {
+                console.log(data);
+            }
+        })
+        console.log(data1);
+    });
+</script>
