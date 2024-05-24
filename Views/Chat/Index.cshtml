@@ -39,6 +39,14 @@
 <script>
     var socket = new WebSocket("ws://localhost:5355?userId="+@userId);
 
+//    $(document).ready(function () {
+//      const message = Model.listOfUsSeenChats;
+
+//socket.send(JSON.stringify({
+//    status: "MARKSEEN",
+//    data: message
+//}))
+//    })
     socket.onopen = function () {
         console.log("WebSocket connected");
     };
@@ -55,16 +63,14 @@
         }
         if (jsonData.operation == "userGetsOffline") {
             $("#" + jsonData.userId).find("#isOnline").css("background", "red");
-
-        }
-        else {
-            $("#chatHistory").append(`
-                <div>
-    <p class="p-3 " style="text-align:left  "><b> ${jsonData.sender} :</b > ${jsonData.message}</p>
-</div>`);
-            console.log("Received message: " + event.data);
         }
         
+            $("#chatHistory").append(`
+  <div><p class="p-3" style="text-align: left;"><b> ${jsonData.sender} :</b> ${jsonData.message}</p></div>`);
+            console.log("Received message: " + event.data);
+
+      
+
     };
 
     socket.onclose = function () {
@@ -75,7 +81,7 @@
         $("#newMessage").css("display", "none");
         /*       var message = document.getElementById("messageInput").value;*/
         const message = $("#message").val();
-       
+
 
                 $("#chatHistory").append(`
         <div>
@@ -92,5 +98,6 @@
         })
         );
     }
+
 
 </script>

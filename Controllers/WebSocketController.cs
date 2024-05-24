@@ -80,6 +80,10 @@ namespace HRMS.Controllers
                 socket.OnMessage = message =>
                 {
                     dynamic jsonData = JsonConvert.DeserializeObject(message);
+                    if(jsonData.status == "MARKSEEN")
+                    {
+
+                    }
                     if (currentUsers.ContainsKey(jsonData["id"].ToString()) == true)
                     {
                         Chat _chatMessage = new Chat();
