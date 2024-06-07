@@ -34,8 +34,6 @@ namespace HRMS.Models
             public Nullable<int> DepartmentId { get; set; }
             [Required(ErrorMessage = "Reporting Person Must Be Selected")]
             public Nullable<int> ReportingPerson { get; set; }
-
-         
         }
     }
 }
